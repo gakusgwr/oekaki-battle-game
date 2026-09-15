@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oekaki Battle Ver5.00 - Special Standard Edition</title>
+<title>Oekaki Battle Ver5.25 - Special Standard Edition</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: sans-serif; background: #222; color: #fff; text-align: center; min-height: 100vh; position: relative; padding-bottom: 20px; }
@@ -97,6 +97,7 @@ body.mobile-mode #gameArea {
   min-height: 100vh;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
 }
+body.mobile-mode { touch-action:none; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
 body.mobile-mode #game { width:min(100vw - 8px, 900px); max-width:100%; height:auto; touch-action:none; }
 body.mobile-mode #guideText { font-size:12px; }
 body.mobile-mode #msg { font-size:16px; }
@@ -132,13 +133,36 @@ body.mobile-mode #mobileControls { z-index:160; }
   #mobileSpecial { right:126px; bottom:116px; }
   #mobileShield { right:66px; bottom:120px; }
   #mobileChest { right:10px; bottom:120px; }
+
+  /* スマホ版の武器選択・決定ボタンを画面内に収める */
+  body.mobile-mode #draw {
+    width:100%;
+    max-width:100vw;
+    padding:12px 6px 20px;
+    overflow-x:hidden;
+  }
+  body.mobile-mode .weapon-select-box {
+    width:calc(100vw - 12px);
+    max-width:none;
+    padding:8px 4px;
+  }
+  body.mobile-mode .weapon-select-box button {
+    font-size:14px;
+    padding:7px 8px;
+    margin:3px 1px;
+  }
+  body.mobile-mode #judgeBtn,
+  body.mobile-mode #clearBtn {
+    max-width:calc(100vw - 24px);
+    white-space:normal;
+  }
 }
 </style>
 </head>
 <body>
 
 <div id="title">
-  <h1 style="margin: 40px 0 20px;">🎨 お絵描きバトル Ver5.00</h1>
+  <h1 style="margin: 40px 0 20px;">🎨 お絵描きバトル Ver5.25</h1>
   <h2 style="margin-bottom:16px;">遊ぶ端末を選択してください</h2>
   <button onclick="chooseDevice('pc')" style="font-size:20px; padding:14px 28px;">💻 PC版</button>
   <button onclick="chooseDevice('mobile')" style="font-size:20px; padding:14px 28px;">📱 スマホ版</button>
@@ -292,7 +316,7 @@ body.mobile-mode #mobileControls { z-index:160; }
 <div id="specialCodeBox" class="hidden">
   <h2 style="margin-bottom: 15px;">🤫 スペシャルコード</h2>
   <p>コードを入力してください</p>
-  <input id="specialCodeInput" type="text" autocomplete="off" style="margin: 15px 0;"><br>
+  <input id="specialCodeInput" type="password" autocomplete="off" style="margin: 15px 0;"><br>
   <button id="specialCodeCheck">確認</button>
   <button id="specialCodeBack">戻る</button>
   <p id="specialCodeMsg" style="color: #ff6b6b; margin-top: 10px;"></p>
@@ -304,11 +328,11 @@ body.mobile-mode #mobileControls { z-index:160; }
   <div id="adminBody" style="padding: 6px;">
     <button data-a="god">💀 GOD MODE</button>
     <button data-a="invincible">🛡️ 無敵</button>
-    <button data-a="infiniteItems">🎁 アイテム無限</button>
+    
     <button data-a="noCooldown">⚡ CDなし</button>
     <button data-a="autoHeal">❤️ 自動回復</button>
     <button data-a="attackMax">⚔️ 攻撃力MAX</button>
-    <button data-a="bulletInfinite">🔮 弾幕無限</button>
+    
     <button id="admHeal">❤️ 全回復</button>
     <button id="admAddCoin">💰 +500 コイン</button><hr style="margin: 4px 0;">
     <button id="admOpenShop">🛒 ショップを今すぐ起動</button>
@@ -323,7 +347,7 @@ body.mobile-mode #mobileControls { z-index:160; }
     <button id="admDown">⚡️ 敵ダウン</button>
     <button id="admEnemyHP">💀 敵HP変更</button>
     <button data-a="enemyStopped">🛑 敵停止</button>
-    <button data-a="enemyAttacks">🎯 敵攻撃OFF/ON</button>
+    
     <button id="admSpeed">🐌 敵速度</button><hr style="margin: 4px 0;">
     <button data-s="1">🌳 Stage 1</button>
     <button data-s="2">⛏️ Stage 2</button>
@@ -374,10 +398,19 @@ const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
 
 let deviceMode = 'pc';
-function chooseDevice(mode) {
+async function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
+
+  // スマホ版を選んだときは、対応ブラウザなら横向きを自動要求する。
+  if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
+    try {
+      await screen.orientation.lock('landscape');
+    } catch (e) {
+      // ブラウザの仕様でロックできない場合は、CSSの縦向き案内を表示する。
+    }
+  }
   goDraw();
 }
 function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
@@ -759,7 +792,7 @@ let enemyShootTimer = 0, rushTimer = 0, rushDownTimer = 0, enemyRushing = 0;
 
 window.adminUnlocked = false;
 window.adminNoCooldown = false;
-window.admin = { god: false, invincible: false, infiniteItems: false, noCooldown: false, autoHeal: false, attackMax: false, bulletInfinite: false, enemyStopped: false, enemyAttacks: true };
+window.admin = { god: false, invincible: false, noCooldown: false, autoHeal: false, attackMax: false, enemyStopped: false };
 // 宝箱の確率ドロップ設定（通常:70%, レア:25%, 超レア:4.9%, ウルトラレア:0.1%）
 window.chestRates = { normal: 70.0, rare: 25.0, superRare: 4.9, ultraRare: 0.1 };
 window.itemRates = { "❤": 59.1, "💪": 24.3, "🛡️": 10, "👻": 4.1, "🔮": 1.7, "⚡️": 0.7 };
@@ -1076,6 +1109,13 @@ function resetGame() {
   treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
   gameOver = false; stageClear = false;
 
+  // 初期画面へ戻るときはスマホ操作パネルを完全に非表示にする
+  const mobileControls = document.getElementById("mobileControls");
+  if (mobileControls) {
+    mobileControls.style.display = "none";
+    mobileControls.style.pointerEvents = "none";
+  }
+
   isGatlingActive = false; isBlackholeActive = false; bigSlashAnimTimer = 0;
 
   locked = false;
@@ -1094,8 +1134,7 @@ function resetGame() {
   enemySpeedMul = 1;
   if (window.godModeFunction) window.godModeFunction(false);
   Object.keys(admin).forEach(k => admin[k] = false);
-  admin.enemyAttacks = true;
-  document.getElementById("adminPanel").classList.add("hidden");
+    document.getElementById("adminPanel").classList.add("hidden");
 
   createMinionsForStage(1);
   spawnBox();
@@ -1131,6 +1170,7 @@ function proceedToNextStageNumber() {
     return;
   }
   
+  p.x = 100; p.y = 250;
   p.hp = Math.min(p.max, p.hp + 30);
   enemy.maxHp = stageBosses[stage - 1].hp;
   enemy.hp = enemy.maxHp;
@@ -1481,7 +1521,7 @@ function update() {
   }
 
   // ボス固有大技タイマー（4.6秒 = 276フレーム）
-  if (!admin.enemyStopped && admin.enemyAttacks !== false && stun <= 0) {
+  if (!admin.enemyStopped && stun <= 0) {
     bossSpecialTimer++;
     if (bossSpecialTimer >= 276) {
       bossSpecialTimer = 0;
@@ -1566,7 +1606,7 @@ function update() {
   // Stage 8 ボス移動制限（前半無敵時は動かない、子分10体全滅後の後半タイマン覚醒で移動開始）
   const canBossMove = (stage !== 8) || (stage === 8 && stage8TotalSummoned >= 10 && minions.length === 0);
 
-  if (!admin.enemyStopped && admin.enemyAttacks !== false && stun <= 0 && rushDownTimer <= 0 && lightningTimer <= 0 && !isBlackholeActive && canBossMove) {
+  if (!admin.enemyStopped && stun <= 0 && rushDownTimer <= 0 && lightningTimer <= 0 && !isBlackholeActive && canBossMove) {
     moveSmartAI(enemy, currentEnemyBaseSpeed, 0.5);
     if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 45) damagePlayer(normalEnemyDps() * dt * 60);
   }
@@ -1574,7 +1614,7 @@ function update() {
   // Minion AI & Actions
   for (let i = minions.length - 1; i >= 0; i--) {
     let m = minions[i];
-    if (!admin.enemyStopped && admin.enemyAttacks !== false && stun <= 0 && lightningTimer <= 0 && !isBlackholeActive) {
+    if (!admin.enemyStopped && stun <= 0 && lightningTimer <= 0 && !isBlackholeActive) {
       let mSpeed = m.type === "magma" ? 3.0 : 1.8;
       if (stage >= 5) mSpeed *= 0.9;
       moveSmartAI(m, mSpeed, 0.4);
@@ -1634,7 +1674,7 @@ function update() {
   }
 
   // Boss Attack Patterns
-  if ([2, 4, 5, 6, 8].includes(stage) && admin.enemyAttacks !== false && !admin.enemyStopped && lightningTimer <= 0 && enemyRushing <= 0) {
+  if ([2, 4, 5, 6, 8].includes(stage) && !admin.enemyStopped && lightningTimer <= 0 && enemyRushing <= 0) {
     enemyShootTimer++;
     if (enemyShootTimer >= 60) {
       enemyShootTimer = 0;
@@ -1644,7 +1684,7 @@ function update() {
     }
   }
 
-  if ([3, 4, 7, 8].includes(stage) && admin.enemyAttacks !== false && !admin.enemyStopped && rushDownTimer <= 0 && lightningTimer <= 0 && canBossMove) {
+  if ([3, 4, 7, 8].includes(stage) && !admin.enemyStopped && rushDownTimer <= 0 && lightningTimer <= 0 && canBossMove) {
     if (enemyRushing > 0) {
       enemyRushing--;
       let edx = p.x - enemy.x, edy = p.y - enemy.y, ed = Math.hypot(edx, edy) || 1;
@@ -2012,10 +2052,23 @@ function updateRikuUI() {
   function stopAim(e) { if (e.pointerId===aimPointer) { e.preventDefault(); aimPointer=null; aimKnob.style.transform='translate(-50%,-50%)'; } }
   aimStick.addEventListener('pointerup', stopAim, {passive:false}); aimStick.addEventListener('pointercancel', stopAim, {passive:false});
 
-  attackBtn.addEventListener('pointerdown', e => { if (deviceMode !== 'mobile') return; e.preventDefault(); attackBtn.setPointerCapture?.(e.pointerId); beginAttackCharge(); }, {passive:false});
-  attackBtn.addEventListener('pointerup', e => { e.preventDefault(); releaseAttackCharge(); }, {passive:false});
-  attackBtn.addEventListener('pointercancel', e => { e.preventDefault(); releaseAttackCharge(); }, {passive:false});
-  attackBtn.addEventListener('pointerleave', e => { if (e.buttons === 0) releaseAttackCharge(); }, {passive:false});
+  // Multi-touch: keep track of every finger holding the attack button.
+  const attackPointers = new Set();
+  function attackPointerDown(e) {
+    if (deviceMode !== 'mobile') return;
+    e.preventDefault();
+    attackPointers.add(e.pointerId);
+    attackBtn.setPointerCapture?.(e.pointerId);
+    if (attackPointers.size === 1) beginAttackCharge();
+  }
+  function attackPointerUp(e) {
+    e.preventDefault();
+    attackPointers.delete(e.pointerId);
+    if (attackPointers.size === 0) releaseAttackCharge();
+  }
+  attackBtn.addEventListener('pointerdown', attackPointerDown, {passive:false});
+  attackBtn.addEventListener('pointerup', attackPointerUp, {passive:false});
+  attackBtn.addEventListener('pointercancel', attackPointerUp, {passive:false});
 
   specialBtn.addEventListener('pointerdown', e => {
     if (deviceMode !== 'mobile') return; e.preventDefault();
@@ -2025,9 +2078,22 @@ function updateRikuUI() {
   }, {passive:false});
 
   function holdKeyButton(btn, key) {
-    btn.addEventListener('pointerdown', e => { if (deviceMode !== 'mobile') return; e.preventDefault(); keys[key]=true; btn.setPointerCapture?.(e.pointerId); }, {passive:false});
-    const stop = e => { e.preventDefault(); keys[key]=false; };
-    btn.addEventListener('pointerup', stop, {passive:false}); btn.addEventListener('pointercancel', stop, {passive:false}); btn.addEventListener('pointerleave', e => { if (e.buttons===0) keys[key]=false; }, {passive:false});
+    // Multi-touch: the key stays pressed until all fingers using this button leave.
+    const pointers = new Set();
+    btn.addEventListener('pointerdown', e => {
+      if (deviceMode !== 'mobile') return;
+      e.preventDefault();
+      pointers.add(e.pointerId);
+      keys[key] = true;
+      btn.setPointerCapture?.(e.pointerId);
+    }, {passive:false});
+    const stop = e => {
+      e.preventDefault();
+      pointers.delete(e.pointerId);
+      keys[key] = pointers.size > 0;
+    };
+    btn.addEventListener('pointerup', stop, {passive:false});
+    btn.addEventListener('pointercancel', stop, {passive:false});
   }
   holdKeyButton(shieldBtn, window.controlKeys.shield);
   holdKeyButton(chestBtn, window.controlKeys.chest);
@@ -2089,9 +2155,8 @@ loop();
   };
 
   function god(on) {
-    admin.god = on; admin.invincible = on; admin.infiniteItems = on; admin.noCooldown = on;
-    admin.autoHeal = on; admin.attackMax = on; admin.bulletInfinite = on; admin.enemyStopped = on; admin.enemyAttacks = !on;
-    window.adminNoCooldown = on;
+    admin.god = on; admin.invincible = on; admin.noCooldown = on;
+    admin.autoHeal = on; admin.attackMax = on; admin.enemyStopped = on;     window.adminNoCooldown = on;
   }
   window.godModeFunction = god;
 
@@ -2157,7 +2222,8 @@ loop();
   };
 
   panel.querySelectorAll("[data-s]").forEach(b => b.onclick = () => {
-    if (!confirm("このステージへ移動しますか？")) return;
+    // PC版は確認あり、スマホ版はタップですぐステージ移動。
+    if (deviceMode !== 'mobile' && !confirm("このステージへ移動しますか？")) return;
     const s = +b.dataset.s;
     stage = Math.max(1, Math.min(8, s));
     setStageObstacles(stage);
