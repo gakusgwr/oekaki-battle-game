@@ -16,11 +16,10 @@ button:disabled { opacity: 0.5; cursor: not-allowed; background: #222; }
 #drawCanvas { background: #fff; touch-action: none; cursor: crosshair; }
 #draw { position: relative; padding: 20px; }
 #gearBtn { position: absolute; right: 8px; top: 8px; font-size: 24px; padding: 6px; }
-#hushBtn { position: absolute; right: 54px; top: 8px; font-size: 24px; padding: 6px; z-index: 11; }
+#hushBtn { position: fixed; right: 54px; top: 8px; font-size: 24px; padding: 6px; z-index: 310; }
 #keySetting, #keyConfirm, #specialCodeBox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100; color: #fff; padding: 24px; text-align: center; overflow-y: auto; }
 .keyRow { margin: 12px; }
 input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
-
 .weapon-select-box {
   margin: 10px auto;
   padding: 12px;
@@ -40,7 +39,6 @@ input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 
   border-color: #fff;
   font-weight: bold;
 }
-
 #shopModal {
   position: fixed; inset: 0; background: rgba(10, 15, 30, 0.95); z-index: 250;
   display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
@@ -60,16 +58,14 @@ input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 
   background: #0284c7; width: 100%; margin-top: 6px; font-weight: bold;
 }
 .shop-card button:disabled { background: #334155; }
-
 #adminPanel, #kizukuPanel, #rikuPanel { position: fixed; left: 10px; z-index: 150; background: rgba(0,0,0,.9); color: white; border: 2px solid #fff; border-radius: 8px; width: 210px; max-height: 85vh; overflow-y: auto; text-align: left; font: 12px sans-serif; }
-#adminPanel { top: 10px; }
+#adminPanel { top: 10px; z-index: 500; }
 #kizukuPanel { top: 10px; border-color: #00ffff; }
 #rikuPanel { top: 10px; border-color: #ff3366; }
 #adminPanel button, #kizukuPanel button, #rikuPanel button { width: 100%; margin: 2px 0; padding: 6px; font-size: 13px; text-align: left; background: #333; color: #fff; border: 1px solid #555; }
 #kizukuPanel button:hover { background: #0088aa; }
 #rikuPanel button:hover { background: #aa0033; }
 #adminRateEditor { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 300; background: #111; color: #fff; border: 2px solid #fff; border-radius: 8px; padding: 16px; width: 280px; max-height: 80vh; overflow-y: auto; text-align: left; }
-
 #specialModal {
   position: fixed; inset: 0; background: rgba(0, 0, 0, 0.88); z-index: 200;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -88,7 +84,6 @@ input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 
 .special-guide-box h3 { color: #ff3366; margin-bottom: 10px; font-size: 18px; text-align: center; }
 .special-guide-box ul { list-style: none; padding: 0; }
 .special-guide-box li { font-size: 20px; margin: 8px 0; display: flex; align-items: center; gap: 8px; }
-
 #mobileControls { display:none; }
 body.mobile-mode { overflow-x:hidden; }
 body.mobile-mode { overflow:hidden; min-height:100vh; }
@@ -126,6 +121,118 @@ body.mobile-mode #mobileControls { z-index:160; }
 @media (orientation: portrait) and (max-width: 900px) {
   body.mobile-mode #gameArea::before { content:'📱 横画面がおすすめです'; display:block; color:#ffd700; font-size:13px; margin:4px 0; }
 }
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #gameArea {
+    width:100vw;
+    box-sizing:border-box;
+    padding:4px 4px 86px;
+    min-height:100vh;
+    justify-content:flex-start;
+    gap:2px;
+  }
+  body.mobile-mode #gameArea h2 {
+    margin:2px 0;
+    font-size:18px;
+  }
+  body.mobile-mode #gameArea > div:not(#chargeContainer):not(#msg) {
+    margin:2px 0 !important;
+    font-size:11px;
+    line-height:1.2;
+  }
+  body.mobile-mode #chargeContainer {
+    font-size:11px;
+    margin:1px 0 !important;
+  }
+  body.mobile-mode #charge {
+    width:120px !important;
+    height:12px !important;
+  }
+  body.mobile-mode #game {
+    width:min(100vw - 8px, calc((100vh - 105px) * 1.8));
+    height:auto;
+    max-height:calc(100vh - 105px);
+    object-fit:contain;
+  }
+  body.mobile-mode #guideText {
+    position:absolute;
+    left:50%;
+    bottom:72px;
+    transform:translateX(-50%);
+    width:92vw;
+    margin:0;
+    font-size:10px;
+    line-height:1.2;
+    text-align:center;
+  }
+
+  body.mobile-mode #draw {
+    width:100vw;
+    max-width:100vw;
+    height:100vh;
+    box-sizing:border-box;
+    padding:4px 6px 6px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    gap:2px;
+  }
+  body.mobile-mode #draw h2 {
+    margin:2px 0;
+    font-size:18px;
+  }
+  body.mobile-mode .weapon-select-box {
+    width:100%;
+    max-width:100vw;
+    box-sizing:border-box;
+    padding:4px;
+    margin:0;
+  }
+  body.mobile-mode .weapon-select-box p {
+    margin:1px 0 3px !important;
+    font-size:11px !important;
+  }
+  body.mobile-mode .weapon-select-box button {
+    font-size:11px;
+    padding:4px 6px;
+    margin:1px;
+  }
+  body.mobile-mode #guideInstruction {
+    font-size:11px !important;
+    margin:1px 0 !important;
+    line-height:1.1;
+  }
+  body.mobile-mode #drawCanvas {
+    width:min(42vh, 52vw);
+    height:min(42vh, 52vw);
+    max-width:100%;
+    max-height:calc(100vh - 155px);
+    flex:0 1 auto;
+  }
+  body.mobile-mode #judgeBtn,
+  body.mobile-mode #clearBtn {
+    font-size:12px;
+    padding:5px 10px;
+    margin:1px;
+    white-space:nowrap;
+  }
+  body.mobile-mode #result {
+    margin:2px 0 !important;
+    font-size:13px !important;
+    line-height:1.1;
+  }
+  body.mobile-mode #gearBtn {
+    font-size:18px;
+    padding:3px 7px;
+    margin:1px;
+  }
+  body.mobile-mode #battleBtn {
+    font-size:14px !important;
+    padding:5px 10px !important;
+  }
+}
+
 @media (max-width: 600px) {
   .mobile-stick { width:100px; height:100px; }
   .mobile-stick .stick-knob { width:42px; height:42px; }
@@ -134,40 +241,52 @@ body.mobile-mode #mobileControls { z-index:160; }
   #mobileShield { right:66px; bottom:120px; }
   #mobileChest { right:10px; bottom:120px; }
 
-  /* スマホ版の武器選択・決定ボタンを画面内に収める */
   body.mobile-mode #draw {
-    width:100%;
+    width:100vw;
     max-width:100vw;
-    padding:12px 6px 20px;
-    overflow-x:hidden;
+    box-sizing:border-box;
+    padding:6px;
+    overflow:hidden;
   }
   body.mobile-mode .weapon-select-box {
-    width:calc(100vw - 12px);
-    max-width:none;
-    padding:8px 4px;
+    width:100%;
+    max-width:100vw;
+    box-sizing:border-box;
+    padding:6px 4px;
   }
   body.mobile-mode .weapon-select-box button {
-    font-size:14px;
-    padding:7px 8px;
-    margin:3px 1px;
+    font-size:12px;
+    padding:5px 6px;
+    margin:2px 1px;
   }
   body.mobile-mode #judgeBtn,
   body.mobile-mode #clearBtn {
-    max-width:calc(100vw - 24px);
+    max-width:calc(100vw - 12px);
     white-space:normal;
+    font-size:13px;
   }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  body.mobile-mode #drawCanvas {
+    width:min(38vh, 48vw);
+    height:min(38vh, 48vw);
+  }
+  body.mobile-mode #draw h2 { font-size:16px; }
+  body.mobile-mode #guideInstruction { font-size:10px !important; }
+  body.mobile-mode .weapon-select-box button { font-size:10px; padding:3px 5px; }
+  body.mobile-mode #judgeBtn,
+  body.mobile-mode #clearBtn { font-size:11px; padding:4px 8px; }
 }
 </style>
 </head>
 <body>
-
 <div id="title">
   <h1 style="margin: 40px 0 20px;">🎨 お絵描きバトル Ver5.25</h1>
   <h2 style="margin-bottom:16px;">遊ぶ端末を選択してください</h2>
   <button onclick="chooseDevice('pc')" style="font-size:20px; padding:14px 28px;">💻 PC版</button>
   <button onclick="chooseDevice('mobile')" style="font-size:20px; padding:14px 28px;">📱 スマホ版</button>
 </div>
-
 <div id="draw" class="hidden">
   <h2>狙う武器を選択して描こう！</h2>
   <div class="weapon-select-box">
@@ -179,18 +298,15 @@ body.mobile-mode #mobileControls { z-index:160; }
     <button id="btnFree" class="active" onclick="selectTargetWeapon('FREE')">🎨 自由描画</button>
   </div>
   <p id="guideInstruction" style="color:#ffcc00; font-size:14px; margin-bottom:8px;">★マークを丁寧になぞろう！ずれると他の武器になっちゃうぞ！</p>
-  
   <canvas id="drawCanvas" width="400" height="400"></canvas><br>
   <button id="judgeBtn" onclick="judge()">武器決定（やり直し不可！）</button>
   <button id="clearBtn" onclick="clearCanvas()">描き直す</button>
   <p id="result" style="margin: 10px 0; font-size: 20px; font-weight:bold;"></p>
-  <button id="hushBtn" title="スペシャルコード">🤫</button>
   <button id="gearBtn" title="キー設定">⚙️</button>
   <button id="battleBtn" class="hidden" onclick="startCountdown()" style="font-size: 18px; background: #28a745;">戦闘開始</button>
 </div>
-
+<button id="hushBtn" title="スペシャルコード">🤫</button>
 <div id="count" class="hidden" style="margin-top: 100px;"><h1 id="countText" style="font-size: 72px;">3</h1></div>
-
 <div id="gameArea" class="hidden">
   <h2 id="stageLabel">🌳 Stage 1</h2>
   <div style="margin: 8px 0;">
@@ -202,7 +318,6 @@ body.mobile-mode #mobileControls { z-index:160; }
   <canvas id="game" width="900" height="500"></canvas>
   <p id="guideText">設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b></p>
 </div>
-
 <div id="mobileControls" aria-label="スマホ操作パネル">
   <div id="mobileHint">左：移動　右：照準　攻撃：長押し→離す</div>
   <div id="moveStick" class="mobile-stick"><div class="stick-knob"></div></div>
@@ -212,13 +327,10 @@ body.mobile-mode #mobileControls { z-index:160; }
   <button id="mobileShield" class="mobile-btn">🛡️<br>盾</button>
   <button id="mobileChest" class="mobile-btn">📦<br>宝箱</button>
 </div>
-
-<!-- Shop Modal -->
 <div id="shopModal" class="hidden">
   <div class="shop-container">
     <h2 id="shopTitle" style="color: #38bdf8; margin-bottom: 10px;">🛒 アイテムショップ</h2>
     <p id="shopSub" style="font-size: 14px; color: #cbd5e1;">所持コイン: <span id="shopCoin" style="color: #ffd700; font-weight: bold;">0</span> | 残り購入可能枠: <span id="shopBuyLimit">1</span></p>
-    
     <div class="shop-grid">
       <div class="shop-card">
         <h3>❤️ HP回復</h3>
@@ -226,35 +338,30 @@ body.mobile-mode #mobileControls { z-index:160; }
         <p style="color: #ffd700; font-weight: bold;" id="price_heal">10 G</p>
         <button id="buy_heal" onclick="buyShopItem('heal')">購入</button>
       </div>
-
       <div class="shop-card">
         <h3>💖 最大HPUP</h3>
         <p style="font-size: 12px; margin: 4px 0;">最大HP +50</p>
         <p style="color: #ffd700; font-weight: bold;" id="price_maxhp">60 G</p>
         <button id="buy_maxhp" onclick="buyShopItem('maxhp')">購入</button>
       </div>
-
       <div class="shop-card">
         <h3>💪 攻撃力UP</h3>
         <p style="font-size: 12px; margin: 4px 0;">攻撃力 永久強化</p>
         <p style="color: #ffd700; font-weight: bold;" id="price_atk">50 G</p>
         <button id="buy_atk" onclick="buyShopItem('atk')">購入</button>
       </div>
-
       <div class="shop-card">
         <h3>🛡️ シールド</h3>
         <p style="font-size: 12px; margin: 4px 0;">7秒間バリア</p>
         <p style="color: #ffd700; font-weight: bold;" id="price_shield">45 G</p>
         <button id="buy_shield" onclick="buyShopItem('shield')">購入</button>
       </div>
-
       <div class="shop-card">
         <h3>🗿 復活の石</h3>
         <p style="font-size: 12px; margin: 4px 0;">1回復活(HP50)</p>
         <p style="color: #ffd700; font-weight: bold;" id="price_revive">100 G</p>
         <button id="buy_revive" onclick="buyShopItem('revive')">購入</button>
       </div>
-
       <div class="shop-card">
         <h3>🌟 必殺技</h3>
         <p style="font-size: 12px; margin: 4px 0;">ストック+1 (ランダム)</p>
@@ -262,15 +369,12 @@ body.mobile-mode #mobileControls { z-index:160; }
         <button id="buy_special" onclick="buyShopItem('special')">購入</button>
       </div>
     </div>
-
     <div style="margin-top: 10px;">
       <button id="expandSlotBtn" onclick="expandShopSlot()" style="background: #eab308; color: #000; font-weight: bold;">🔓 購入枠を拡張 (+1枠 / 40 G)</button>
       <button onclick="closeShop()" style="background: #22c55e; font-weight: bold; font-size: 16px; margin-left: 10px; padding: 8px 20px;">次ステージへ出発！</button>
     </div>
   </div>
 </div>
-
-<!-- Special Attack Modal -->
 <div id="specialModal" class="hidden">
   <h2 style="color: #ff3366; margin-bottom: 15px;">🔥 DRAW YOUR SPECIAL MOVE! 🔥</h2>
   <div class="special-modal-content">
@@ -288,8 +392,6 @@ body.mobile-mode #mobileControls { z-index:160; }
   </div>
   <button onclick="executeSpecialAttack()" style="font-size: 18px; background: #ff3366; margin-top: 15px; padding: 8px 24px; font-weight: bold;">発動！</button>
 </div>
-
-<!-- Key Settings Modal -->
 <div id="keySetting" class="hidden">
   <h2>⚙️ キー設定</h2>
   <div id="keyRows"></div>
@@ -304,15 +406,12 @@ body.mobile-mode #mobileControls { z-index:160; }
   <button id="keyCheckBtn">設定を確認</button>
   <button id="keyBackBtn">戻る</button>
 </div>
-
 <div id="keyConfirm" class="hidden">
   <h2>⚙️ 設定確認</h2>
   <div id="keySummary" style="margin: 20px 0;"></div>
   <button id="keySaveBtn">💾 保存</button>
   <button id="keyReturnBtn">↩️ 戻る</button>
 </div>
-
-<!-- Special Code Modal -->
 <div id="specialCodeBox" class="hidden">
   <h2 style="margin-bottom: 15px;">🤫 スペシャルコード</h2>
   <p>コードを入力してください</p>
@@ -321,18 +420,14 @@ body.mobile-mode #mobileControls { z-index:160; }
   <button id="specialCodeBack">戻る</button>
   <p id="specialCodeMsg" style="color: #ff6b6b; margin-top: 10px;"></p>
 </div>
-
-<!-- Admin Panel -->
 <div id="adminPanel" class="hidden">
-  <div id="adminHead" style="padding: 7px; font-weight: bold; cursor: pointer; background: #333;">👑 ADMIN <span id="adminArrow">▲</span></div>
+  <div id="adminHead" style="padding: 7px; font-weight: bold; cursor: pointer; background: #333; display:flex; align-items:center; justify-content:space-between;"><span>👑 ADMIN</span><button id="adminClose" type="button" style="width:auto; margin:0; padding:2px 7px; font-size:12px; text-align:center;">✕ 閉じる</button></div>
   <div id="adminBody" style="padding: 6px;">
     <button data-a="god">💀 GOD MODE</button>
     <button data-a="invincible">🛡️ 無敵</button>
-    
     <button data-a="noCooldown">⚡ CDなし</button>
     <button data-a="autoHeal">❤️ 自動回復</button>
     <button data-a="attackMax">⚔️ 攻撃力MAX</button>
-    
     <button id="admHeal">❤️ 全回復</button>
     <button id="admAddCoin">💰 +500 コイン</button><hr style="margin: 4px 0;">
     <button id="admOpenShop">🛒 ショップを今すぐ起動</button>
@@ -347,23 +442,20 @@ body.mobile-mode #mobileControls { z-index:160; }
     <button id="admDown">⚡️ 敵ダウン</button>
     <button id="admEnemyHP">💀 敵HP変更</button>
     <button data-a="enemyStopped">🛑 敵停止</button>
-    
     <button id="admSpeed">🐌 敵速度</button><hr style="margin: 4px 0;">
-    <button data-s="1">🌳 Stage 1</button>
-    <button data-s="2">⛏️ Stage 2</button>
-    <button data-s="3">🌉 Stage 3</button>
-    <button data-s="4">🏰 Stage 4</button>
-    <button data-s="5">🌊 Stage 5</button>
-    <button data-s="6">🌋 Stage 6</button>
-    <button data-s="7">☁️ Stage 7</button>
-    <button data-s="8">🌌 Stage 8</button><hr style="margin: 4px 0;">
+    <button type="button" data-s="1">🌳 Stage 1</button>
+    <button type="button" data-s="2">⛏️ Stage 2</button>
+    <button type="button" data-s="3">🌉 Stage 3</button>
+    <button type="button" data-s="4">🏰 Stage 4</button>
+    <button type="button" data-s="5">🌊 Stage 5</button>
+    <button type="button" data-s="6">🌋 Stage 6</button>
+    <button type="button" data-s="7">☁️ Stage 7</button>
+    <button type="button" data-s="8">🌌 Stage 8</button><hr style="margin: 4px 0;">
     <button id="admRates">🎁 アイテム確率変更</button>
     <button id="admBoxCount">📦 ボックス数変更</button>
     <button id="admReset">🔄 管理者効果OFF</button>
   </div>
 </div>
-
-<!-- Kizuku2 Panel -->
 <div id="kizukuPanel" class="hidden">
   <div style="padding: 7px; font-weight: bold; background: #005577; color: #00ffff;">⚡ KIZUKU2 ITEMS</div>
   <div style="padding: 6px;">
@@ -375,8 +467,6 @@ body.mobile-mode #mobileControls { z-index:160; }
     <button id="kzLightning">⚡️ ダウン <span id="kzCount_lightning">(2)</span></button>
   </div>
 </div>
-
-<!-- Riku Panel -->
 <div id="rikuPanel" class="hidden">
   <div style="padding: 7px; font-weight: bold; background: #880022; color: #ff99bb;">⚡ RIKU SPECIALS</div>
   <div style="padding: 6px;">
@@ -387,22 +477,18 @@ body.mobile-mode #mobileControls { z-index:160; }
     <button id="rkSlash">⚔️ スラッシュ <span id="rkCount_slash">(3)</span></button>
   </div>
 </div>
-
 <script>
 const CANVAS_WIDTH = 900;
 const CANVAS_HEIGHT = 500;
-
 const title = document.getElementById("title");
 const drawDiv = document.getElementById("draw");
 const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
-
 let deviceMode = 'pc';
 async function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
-
   // スマホ版を選んだときは、対応ブラウザなら横向きを自動要求する。
   if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
     try {
@@ -414,18 +500,15 @@ async function chooseDevice(mode) {
   goDraw();
 }
 function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
-
 window.controlKeys = { attack: "e", chest: "f", shield: "g", up: "w", down: "s", left: "a", right: "d" };
 window.attackExtraKeys = [];
 window.keySettingEditing = null;
-
 try {
   const savedKeys = JSON.parse(localStorage.getItem("oekakiBattleKeys") || "null");
   if (savedKeys && typeof savedKeys === "object") window.controlKeys = { ...window.controlKeys, ...savedKeys };
   const savedExtras = JSON.parse(localStorage.getItem("oekakiBattleAttackExtras") || "[]");
   if (Array.isArray(savedExtras)) window.attackExtraKeys = savedExtras;
 } catch (e) {}
-
 const keyLabels = { attack: "攻撃", chest: "宝箱長押し", shield: "シールド長押し", up: "上移動", down: "下移動", left: "左移動", right: "右移動" };
 function keyText(k) {
   if (!k) return "";
@@ -436,7 +519,6 @@ function keyText(k) {
   if (k === "arrowright") return "→";
   return k.length === 1 ? k.toUpperCase() : k;
 }
-
 function renderKeyRows() {
   const el = document.getElementById("keyRows");
   el.innerHTML = "";
@@ -455,7 +537,6 @@ function renderKeyRows() {
     view.textContent = "追加中: " + (window.attackExtraKeys.map(k => k === "mouseleft" ? "左クリック" : k === " " ? "Space" : k.toUpperCase()).join(" / ") || "なし");
   }
 }
-
 function openKeySettings() { renderKeyRows(); document.getElementById("keyWaiting").textContent = "変更する項目を選んでください"; document.getElementById("keySetting").classList.remove("hidden"); }
 document.getElementById("gearBtn").onclick = openKeySettings;
 document.getElementById("keyCheckBtn").onclick = () => {
@@ -471,17 +552,14 @@ document.getElementById("keySaveBtn").onclick = () => {
   document.getElementById("keyConfirm").classList.add("hidden");
   drawDiv.classList.remove("hidden");
 };
-
 document.getElementById("addSpace").onclick = () => { if (!window.attackExtraKeys.includes(" ")) window.attackExtraKeys.push(" "); renderKeyRows(); };
 document.getElementById("addMouse").onclick = () => { if (!window.attackExtraKeys.includes("mouseleft")) window.attackExtraKeys.push("mouseleft"); renderKeyRows(); };
 document.getElementById("addCustom").onclick = () => { const k = prompt("追加するキーを入力してください"); if (k && !window.attackExtraKeys.includes(k.toLowerCase())) window.attackExtraKeys.push(k.toLowerCase()); renderKeyRows(); };
-
 let pts = [];
 const dc = document.getElementById("drawCanvas");
 const dctx = dc.getContext("2d");
 let drawing = false, locked = false;
 let selectedTarget = 'FREE';
-
 function getStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
   let rot = Math.PI / 2 * 3;
   let x = cx, y = cy;
@@ -499,9 +577,7 @@ function getStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
   }
   return points;
 }
-
 const starPoints = getStarPoints(200, 200, 5, 100, 45);
-
 const swordPoints = [
   {x: 200, y: 50}, {x: 220, y: 80}, {x: 220, y: 260},
   {x: 270, y: 260}, {x: 270, y: 280}, {x: 220, y: 280},
@@ -509,20 +585,17 @@ const swordPoints = [
   {x: 130, y: 280}, {x: 130, y: 260}, {x: 180, y: 260},
   {x: 180, y: 80}
 ];
-
 const carPoints = [
   {x: 60, y: 240}, {x: 100, y: 160}, {x: 200, y: 160}, {x: 270, y: 200}, {x: 340, y: 200},
   {x: 340, y: 260}, {x: 300, y: 260}, {x: 260, y: 260}, {x: 140, y: 260}, {x: 100, y: 260}, {x: 60, y: 260}
 ];
 const carWheel1 = {x: 120, y: 260, r: 30};
 const carWheel2 = {x: 280, y: 260, r: 30};
-
 const bowArcPoints = [];
 for (let a = -Math.PI * 0.45; a <= Math.PI * 0.45; a += Math.PI * 0.05) {
   bowArcPoints.push({ x: 230 - Math.cos(a) * 130, y: 200 + Math.sin(a) * 150 });
 }
 const bowStringPoints = [{ x: 135, y: 52 }, { x: 135, y: 348 }];
-
 function selectTargetWeapon(type) {
   if (locked) return;
   selectedTarget = type;
@@ -535,7 +608,6 @@ function selectTargetWeapon(type) {
   else if (type === '🚙') document.getElementById("btnCar").classList.add("active");
   else if (type === '🏹') document.getElementById("btnBow").classList.add("active");
   else document.getElementById("btnFree").classList.add("active");
-
   const guideInst = document.getElementById("guideInstruction");
   if (type === 'FREE') {
     guideInst.textContent = "自由に描こう！（縦長:⚔️, 横長:🚙, その他:🏹）";
@@ -544,7 +616,6 @@ function selectTargetWeapon(type) {
   }
   clearCanvas();
 }
-
 function drawGuideOutline(points, closePath = true) {
   dctx.strokeStyle = "#bbb";
   dctx.lineWidth = 6;
@@ -555,16 +626,13 @@ function drawGuideOutline(points, closePath = true) {
   }
   if (closePath) dctx.closePath();
   dctx.stroke();
-
   dctx.fillStyle = "#aaa";
   points.forEach(p => {
     dctx.beginPath(); dctx.arc(p.x, p.y, 4, 0, Math.PI * 2); dctx.fill();
   });
 }
-
 function redrawCanvas() {
   dctx.fillStyle = "#fff"; dctx.fillRect(0, 0, dc.width, dc.height);
-
   if (selectedTarget === '🪄') {
     drawGuideOutline(starPoints, true);
   } else if (selectedTarget === '⚔️') {
@@ -582,7 +650,6 @@ function redrawCanvas() {
     dctx.lineTo(bowStringPoints[1].x, bowStringPoints[1].y);
     dctx.stroke();
   }
-
   if (pts.length > 0) {
     dctx.fillStyle = "#000";
     pts.forEach(p => {
@@ -590,24 +657,20 @@ function redrawCanvas() {
     });
   }
 }
-
 function drawPoint(e) {
   if (locked) return;
   const r = dc.getBoundingClientRect();
   const x = (e.clientX - r.left) * (dc.width / r.width);
   const y = (e.clientY - r.top) * (dc.height / r.height);
   pts.push({ x, y });
-  
   dctx.fillStyle = "#000";
   dctx.beginPath(); dctx.arc(x, y, 3, 0, Math.PI * 2); dctx.fill();
 }
-
 dc.addEventListener("pointerdown", e => { if (locked) return; e.preventDefault(); drawing = true; dc.setPointerCapture?.(e.pointerId); drawPoint(e); }, { passive: false });
 dc.addEventListener("pointermove", e => { if (!drawing || locked) return; e.preventDefault(); drawPoint(e); }, { passive: false });
 function stopDraw(e) { e.preventDefault(); drawing = false; if (e.pointerId != null) dc.releasePointerCapture?.(e.pointerId); }
 dc.addEventListener("pointerup", stopDraw, { passive: false });
 dc.addEventListener("pointercancel", stopDraw, { passive: false });
-
 function clearCanvas() {
   if (locked) return;
   pts = [];
@@ -615,7 +678,6 @@ function clearCanvas() {
   document.getElementById("result").textContent = "";
   document.getElementById("battleBtn").classList.add("hidden");
 }
-
 let weapon = "🏹";
 function calcAvgDistToPolyline(points, isClosed = true) {
   let totalDist = 0;
@@ -635,16 +697,13 @@ function calcAvgDistToPolyline(points, isClosed = true) {
   });
   return totalDist / pts.length;
 }
-
 function judge() {
   if (locked) return;
   locked = true;
-
   ["Wand", "Sword", "Car", "Bow", "Free", "judgeBtn", "clearBtn"].forEach(id => {
     const el = document.getElementById("btn" + id) || document.getElementById(id);
     if (el) el.disabled = true;
   });
-
   function fallbackWeapon() {
     let xs = pts.map(p => p.x), ys = pts.map(p => p.y);
     let w = Math.max(...xs) - Math.min(...xs);
@@ -653,7 +712,6 @@ function judge() {
     if (h > w * 1.4) return "⚔️";
     return "🏹";
   }
-
   if (pts.length < 15) {
     weapon = "🏹";
   } else if (selectedTarget === '🪄') {
@@ -671,26 +729,21 @@ function judge() {
   } else {
     weapon = fallbackWeapon();
   }
-
   if (selectedTarget !== 'FREE' && weapon !== selectedTarget) {
     document.getElementById("result").innerHTML = "❌ なぞり失敗！判定：<span style='color:#ff3366;'>" + weapon + "</span> になりました（やり直し不可）";
   } else {
     document.getElementById("result").innerHTML = "🎉 判定成功！武器：<span style='color:#00ffff;'>" + weapon + "</span>";
   }
-
   document.getElementById("battleBtn").classList.remove("hidden");
 }
-
 function startCountdown() {
   drawDiv.classList.add("hidden");
   document.getElementById("count").classList.remove("hidden");
   let n = 3;
   const countText = document.getElementById("countText");
   countText.textContent = "3";
-  
   mouse.x = p.x;
   mouse.y = p.y;
-
   if (deviceMode === 'mobile') {
     document.getElementById("chargeContainer").classList.toggle("hidden", weapon === "🪄");
     document.getElementById("guideText").innerHTML = weapon === "🏹" ? "左スティックで移動 / 右スティックで狙う / 🏹攻撃を長押し→離して発射" : weapon === "🚙" ? "左スティックで移動 / 右スティックで突進方向を決める / 🚙攻撃を長押し→離して突進" : weapon === "🪄" ? "左スティックで移動 / 攻撃で追尾弾 / 必殺ボタンで必殺技" : "左スティックで移動 / 攻撃を長押し→離して攻撃 / 必殺ボタンで必殺技";
@@ -701,28 +754,24 @@ function startCountdown() {
     document.getElementById("chargeContainer").classList.remove("hidden");
     document.getElementById("guideText").innerHTML = "設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b>";
   }
-
   const t = setInterval(() => {
     n--;
     if (n > 0) countText.textContent = String(n);
     else if (n === 0) countText.textContent = "GO!";
-    else { 
-      clearInterval(t); 
-      document.getElementById("count").classList.add("hidden"); 
-      gameArea.classList.remove("hidden"); 
+    else {
+      clearInterval(t);
+      document.getElementById("count").classList.add("hidden");
+      gameArea.classList.remove("hidden");
       document.getElementById('mobileControls').style.display = deviceMode === 'mobile' ? 'block' : 'none';
     }
   }, 1000);
 }
-
 // Game Logic Variables
 const c = document.getElementById("game");
 const ctx = c.getContext("2d");
-
 let stage = 1;
 let coins = 0;
 let p = { x: 100, y: 250, hp: 150, max: 150, r: 20, invincibility: 0 };
-
 // Boss specs for 8 Stages
 const stageBosses = [
   { hp: 200, name: "🌳 Stage 1" },
@@ -734,14 +783,11 @@ const stageBosses = [
   { hp: 1100, name: "☁️ Stage 7: 天空の城" },
   { hp: 1500, name: "🌌 Stage 8: 宇宙ステーション" }
 ];
-
 let enemy = { x: 700, y: 250, hp: 200, maxHp: 200, r: 25, spawnTimer: 0 };
 let minions = [];
 let stage8TotalSummoned = 0; // Stage 8用の子分総召喚数カウンター
-
 let keys = {}, charging = false, charge = 0, stun = 0;
 let mouse = { x: 100, y: 250 };
-
 let atkBuff = 1;
 let shieldEquipped = false, shieldRemainingTime = 0, shieldActive = false;
 let revive = false;
@@ -750,34 +796,27 @@ let bulletHellReady = false;
 let bulletHellBullets = [];
 let magicOrbs = [];
 let wandCooldown = 0;
-
 let lightningTimer = 0;
 let slowDebuffTimer = 0;
-
 // Treasure Chest System
 let treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
 let isOpeningChest = false;
-
 // Shop System State
 let currentShopType = 1;
 let shopMaxSlots = 1;
 let shopSlotsUsed = 0;
 let isShopDiscount = false;
-
 // Kizuku2 & Riku Codes
 let kizuku2Active = false;
 let kizukuItems = { heal: 6, atk: 5, shield: 4, ghost: 3, bullet: 3, lightning: 2 };
 let rikuActive = false;
 let rikuSpecials = { bomb: 3, gatling: 2, meteor: 3, blackhole: 2, slash: 3 };
-
 let specialStock = 0; // 必殺技ストック数
 let isGatlingActive = false, gatlingTimer = 0;
 let isBlackholeActive = false, blackholeTimer = 0;
 let bigSlashAnimTimer = 0;
 let isPausedForSpecial = false;
-
 let bossSpecialTimer = 0; // ボス大技タイマー（4.6秒周期）
-
 let dmgText = [];
 let boxes = [];
 let enemyBullets = [];
@@ -785,11 +824,9 @@ let magmaZones = [];
 let slashTimer = 0, dashTimer = 0, dashVX = 0, dashVY = 0;
 let carHitThisDash = false;
 let attackCooldown = 0;
-
 let gameOver = false;
 let stageClear = false;
 let enemyShootTimer = 0, rushTimer = 0, rushDownTimer = 0, enemyRushing = 0;
-
 window.adminUnlocked = false;
 window.adminNoCooldown = false;
 window.admin = { god: false, invincible: false, noCooldown: false, autoHeal: false, attackMax: false, enemyStopped: false };
@@ -798,7 +835,6 @@ window.chestRates = { normal: 70.0, rare: 25.0, superRare: 4.9, ultraRare: 0.1 }
 window.itemRates = { "❤": 59.1, "💪": 24.3, "🛡️": 10, "👻": 4.1, "🔮": 1.7, "⚡️": 0.7 };
 window.adminBoxCount = 2;
 let enemySpeedMul = 1;
-
 function getBossBaseSpeed(stg) {
   let base = (1.2 + stg * 0.3) * enemySpeedMul;
   if (stg >= 5) {
@@ -806,12 +842,10 @@ function getBossBaseSpeed(stg) {
   }
   return base;
 }
-
 function addRandomSpecialStock() {
   specialStock++;
   msg.textContent = "🌟 必殺技ストックが+1されました！ (合計: " + specialStock + ")";
 }
-
 function createMinionsForStage(stg) {
   minions = [];
   stage8TotalSummoned = 0;
@@ -845,7 +879,6 @@ function createMinionsForStage(stg) {
     enemy.spawnTimer = 180;
   }
 }
-
 function beginAttackCharge() {
   if (gameOver || stageClear || attackCooldown > 0 || isPausedForSpecial) return;
   if (weapon === "🪄") {
@@ -859,7 +892,6 @@ function beginAttackCharge() {
     charging = true;
   }
 }
-
 function releaseAttackCharge() {
   if (weapon === "🪄") return;
   if (!charging) return;
@@ -871,10 +903,8 @@ function releaseAttackCharge() {
   charging = false;
   charge = 0;
 }
-
 document.addEventListener("keydown", e => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
-
   if (window.keySettingEditing) {
     e.preventDefault();
     if (e.key !== "Escape") {
@@ -887,7 +917,6 @@ document.addEventListener("keydown", e => {
   }
   const k = e.key.toLowerCase();
   keys[k] = true;
-
   if ((k === "q" || k === "Q") && !isPausedForSpecial && !gameOver && !stageClear) {
     if (specialStock > 0) {
       openSpecialCanvas();
@@ -895,17 +924,14 @@ document.addEventListener("keydown", e => {
       msg.textContent = "⚠️ 必殺技のストックがありません！";
     }
   }
-
   if (e.repeat) return;
   if (k === window.controlKeys.attack || window.attackExtraKeys?.includes(k)) {
     e.preventDefault();
     beginAttackCharge();
   }
 });
-
 document.addEventListener("keyup", e => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
-
   const k = e.key.toLowerCase();
   keys[k] = false;
   if (k === window.controlKeys.attack || window.attackExtraKeys?.includes(k)) {
@@ -913,25 +939,20 @@ document.addEventListener("keyup", e => {
     releaseAttackCharge();
   }
 });
-
 document.addEventListener("mousedown", e => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
-
   if (e.button === 0 && window.attackExtraKeys?.includes("mouseleft")) {
     e.preventDefault();
     beginAttackCharge();
   }
 }, true);
-
 document.addEventListener("mouseup", e => {
   if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA")) return;
-
   if (e.button === 0 && window.attackExtraKeys?.includes("mouseleft")) {
     e.preventDefault();
     releaseAttackCharge();
   }
 }, true);
-
 document.addEventListener("contextmenu", e => {
   if (charging) {
     e.preventDefault();
@@ -940,13 +961,11 @@ document.addEventListener("contextmenu", e => {
     msg.textContent = "チャージキャンセル";
   }
 });
-
 c.onmousemove = e => {
   const r = c.getBoundingClientRect();
   mouse.x = (e.clientX - r.left) * (CANVAS_WIDTH / r.width);
   mouse.y = (e.clientY - r.top) * (CANVAS_HEIGHT / r.height);
 };
-
 function weightedItem() {
   const entries = Object.entries(window.itemRates);
   const total = entries.reduce((a, [, v]) => a + Math.max(0, Number(v) || 0), 0);
@@ -958,7 +977,6 @@ function weightedItem() {
   }
   return entries[entries.length - 1][0];
 }
-
 function spawnBox() {
   boxes = [];
   const count = Math.max(1, Math.min(10, Math.floor(Number(window.adminBoxCount) || 2)));
@@ -970,13 +988,11 @@ function spawnBox() {
     });
   }
 }
-
 function getDamage() {
   const ghostMultiplier = ghost ? 0.8 : 1;
   const kizuku2AtkMul = kizuku2Active ? 2.0 : 1;
   return (10 + charge / 8) * atkBuff * 1.03 * ghostMultiplier * kizuku2AtkMul;
 }
-
 function damageEnemy(amount) {
   // Stage 8 ボス無敵判定：累計10体の子分が全滅するまでは完全無敵バリア
   if (stage === 8 && stage8TotalSummoned < 10) {
@@ -987,18 +1003,15 @@ function damageEnemy(amount) {
     msg.textContent = "🛡️ ボスは残存子分により守られている！";
     return;
   }
-
   const actual = Math.max(0, Math.min(enemy.hp, amount));
   enemy.hp = Math.max(0, enemy.hp - amount);
   if (actual > 0) {
     dmgText.push({ x: enemy.x, y: enemy.y, t: "-" + Math.floor(actual), life: 45 });
   }
-
   if (enemy.hp <= 0) {
     coins += 25;
   }
 }
-
 function damageMinion(m, amount) {
   m.hp -= amount;
   dmgText.push({ x: m.x, y: m.y, t: "-" + Math.floor(amount), life: 45 });
@@ -1010,13 +1023,11 @@ function damageMinion(m, amount) {
     }
   }
 }
-
 function fireWandMagic() {
   const angles = [-0.6, -0.4, -0.2, 0, 0.2, 0.4, 0.6];
   let dx = mouse.x - p.x;
   let dy = mouse.y - p.y;
   let baseAngle = Math.atan2(dy, dx);
-
   for (let i = 0; i < 7; i++) {
     let finalAngle = baseAngle + angles[i];
     magicOrbs.push({
@@ -1031,11 +1042,9 @@ function fireWandMagic() {
   }
   msg.textContent = "🪄 魔法の追尾玉を7発同時発射！(18ダメ/発)";
 }
-
 function attack() {
-  if (gameOver || stageClear || isPausedForSpecial) return;
+  if (gameOver || stageClear) return;
   const dmg = getDamage();
-
   if (weapon === "⚔️") {
     slashTimer = 12;
     const reach = 72 + charge / 2;
@@ -1058,13 +1067,11 @@ function attack() {
     dashVX = dx / d * 10;
     dashVY = dy / d * 10;
     carHitThisDash = false;
-    
     minions.forEach(m => {
       if (Math.hypot(p.x - m.x, p.y - m.y) < 118) {
         damageMinion(m, dmg);
       }
     });
-
     if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 118) {
       damageEnemy(dmg);
       stun = 90;
@@ -1072,7 +1079,6 @@ function attack() {
     }
   }
 }
-
 function fireBulletHell() {
   if (!bulletHellReady) return;
   bulletHellReady = false;
@@ -1091,7 +1097,6 @@ function fireBulletHell() {
   }
   msg.textContent = "🔮 弾幕発射！";
 }
-
 function resetGame() {
   stage = 1;
   setStageObstacles(1);
@@ -1102,40 +1107,38 @@ function resetGame() {
   minions = [];
   stage8TotalSummoned = 0;
   bossSpecialTimer = 0;
-  
   atkBuff = 1; shieldEquipped = false; shieldRemainingTime = 0; shieldActive = false; revive = false; ghost = false; ghostTimer = 0;
   bulletHellReady = false; bulletHellBullets = []; magicOrbs = []; wandCooldown = 0; enemyBullets = []; dmgText = []; magmaZones = [];
   lightningTimer = 0; slowDebuffTimer = 0; enemyShootTimer = 0; rushTimer = 0; rushDownTimer = 0;
   treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
   gameOver = false; stageClear = false;
-
   // 初期画面へ戻るときはスマホ操作パネルを完全に非表示にする
   const mobileControls = document.getElementById("mobileControls");
   if (mobileControls) {
     mobileControls.style.display = "none";
     mobileControls.style.pointerEvents = "none";
   }
-
   isGatlingActive = false; isBlackholeActive = false; bigSlashAnimTimer = 0;
-
   locked = false;
   ["Wand", "Sword", "Car", "Bow", "Free", "judgeBtn", "clearBtn"].forEach(id => {
     const el = document.getElementById("btn" + id) || document.getElementById(id);
     if (el) el.disabled = false;
   });
-
   kizuku2Active = false;
   document.getElementById("kizukuPanel").classList.add("hidden");
   rikuActive = false;
   document.getElementById("rikuPanel").classList.add("hidden");
-
   adminUnlocked = false;
+  isPausedForSpecial = false;
+  charging = false;
+  charge = 0;
+  const adminPanel = document.getElementById("adminPanel");
+  if (adminPanel) adminPanel.classList.add("hidden");
   window.adminNoCooldown = false;
   enemySpeedMul = 1;
   if (window.godModeFunction) window.godModeFunction(false);
   Object.keys(admin).forEach(k => admin[k] = false);
     document.getElementById("adminPanel").classList.add("hidden");
-
   createMinionsForStage(1);
   spawnBox();
   document.getElementById("stageLabel").textContent = stageBosses[0].name;
@@ -1143,7 +1146,6 @@ function resetGame() {
   title.classList.remove("hidden");
   clearCanvas();
 }
-
 function nextStage() {
   stageClear = true;
   if (rikuActive) {
@@ -1161,7 +1163,6 @@ function nextStage() {
     proceedToNextStageNumber();
   }, 700);
 }
-
 function proceedToNextStageNumber() {
   stage++;
   if (stage > 8) {
@@ -1169,7 +1170,6 @@ function proceedToNextStageNumber() {
     resetGame();
     return;
   }
-  
   p.x = 100; p.y = 250;
   p.hp = Math.min(p.max, p.hp + 30);
   enemy.maxHp = stageBosses[stage - 1].hp;
@@ -1179,32 +1179,26 @@ function proceedToNextStageNumber() {
   enemyShootTimer = 0; rushTimer = 0; rushDownTimer = 0; dashTimer = 0;
   carHitThisDash = false; attackCooldown = 0; stun = 0; bossSpecialTimer = 0;
   treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
-
   setStageObstacles(stage);
   createMinionsForStage(stage);
   spawnBox();
   stageClear = false;
   document.getElementById("stageLabel").textContent = stageBosses[stage - 1].name;
 }
-
 // Shop Logic
 function openShop(type) {
   currentShopType = type;
   isShopDiscount = (type === 2);
   shopMaxSlots = (type === 1 ? 1 : 5);
   shopSlotsUsed = 0;
-
   document.getElementById("shopTitle").textContent = type === 1 ? "🛒 ステージ4 クリアショップ" : "🛒 最終決戦前 20% OFF セールショップ！";
   document.getElementById("expandSlotBtn").classList.toggle("hidden", type === 2);
-
   updateShopUI();
   document.getElementById("shopModal").classList.remove("hidden");
 }
-
 function updateShopUI() {
   document.getElementById("shopCoin").textContent = coins;
   document.getElementById("shopBuyLimit").textContent = (shopMaxSlots - shopSlotsUsed);
-
   const prices = {
     heal: isShopDiscount ? 8 : 10,
     maxhp: isShopDiscount ? 48 : 60,
@@ -1213,7 +1207,6 @@ function updateShopUI() {
     revive: isShopDiscount ? 80 : 100,
     special: isShopDiscount ? 160 : 200
   };
-
   Object.keys(prices).forEach(item => {
     const elPrice = document.getElementById(`price_${item}`);
     if (elPrice) elPrice.textContent = `${prices[item]} G`;
@@ -1221,7 +1214,6 @@ function updateShopUI() {
     if (btn) btn.disabled = (coins < prices[item]) || (shopSlotsUsed >= shopMaxSlots);
   });
 }
-
 function expandShopSlot() {
   if (coins >= 40 && shopMaxSlots < 3) {
     coins -= 40;
@@ -1234,7 +1226,6 @@ function expandShopSlot() {
     alert("コインが足りません！ (40 G 必要)");
   }
 }
-
 function buyShopItem(item) {
   const prices = {
     heal: isShopDiscount ? 8 : 10,
@@ -1244,31 +1235,24 @@ function buyShopItem(item) {
     revive: isShopDiscount ? 80 : 100,
     special: isShopDiscount ? 160 : 200
   };
-
   const cost = prices[item];
   if (coins < cost || shopSlotsUsed >= shopMaxSlots) return;
-
   coins -= cost;
   shopSlotsUsed++;
-
   if (item === "heal") p.hp = p.max;
   else if (item === "maxhp") { p.max += 50; p.hp += 50; }
   else if (item === "atk") { atkBuff += 0.25; }
   else if (item === "shield") { shieldEquipped = true; shieldRemainingTime = 7.0; }
   else if (item === "revive") { revive = true; }
   else if (item === "special") { addRandomSpecialStock(); }
-
   updateShopUI();
 }
-
 function closeShop() {
   document.getElementById("shopModal").classList.add("hidden");
   proceedToNextStageNumber();
 }
-
 createMinionsForStage(1);
 spawnBox();
-
 const stageObstacles = {
   1: [
     { x: 180, y: 95,  w: 50, h: 50, type: "🌲" },
@@ -1334,22 +1318,18 @@ const stageObstacles = {
   ]
 };
 let obstacles = stageObstacles[1].map(o => ({...o}));
-
 function setStageObstacles(stg) {
   obstacles = (stageObstacles[stg] || stageObstacles[1]).map(o => ({...o}));
 }
-
 function circleRectHit(cx, cy, r, o) {
   const nx = Math.max(o.x, Math.min(cx, o.x + o.w));
   const ny = Math.max(o.y, Math.min(cy, o.y + o.h));
   return Math.hypot(cx - nx, cy - ny) <= r;
 }
-
 function positionBlocked(x, y, r) {
   if (x < r || x > CANVAS_WIDTH - r || y < r || y > CANVAS_HEIGHT - r) return true;
   return obstacles.some(o => circleRectHit(x, y, r, o));
 }
-
 function moveWithObstacles(obj, dx, dy, r) {
   const distance = Math.hypot(dx, dy);
   if (distance === 0) return;
@@ -1362,13 +1342,10 @@ function moveWithObstacles(obj, dx, dy, r) {
     if (!positionBlocked(obj.x, nextY, r)) obj.y = nextY;
   }
 }
-
 function moveSmartAI(entity, baseSpeed, aiLevel) {
   let edx = p.x - entity.x, edy = p.y - entity.y, ed = Math.hypot(edx, edy) || 1;
-  
   if (!entity.aiTimer) entity.aiTimer = 0;
   entity.aiTimer--;
-  
   if (entity.aiTimer <= 0) {
     entity.aiTimer = 20 + Math.floor(Math.random() * 20);
     entity.aiState = "chase";
@@ -1377,10 +1354,8 @@ function moveSmartAI(entity, baseSpeed, aiLevel) {
       else if (ed < 260) entity.aiState = "strafe";
     }
   }
-
   let moveX = edx / ed;
   let moveY = edy / ed;
-
   if (entity.aiState === "flee") {
     moveX = -moveX;
     moveY = -moveY;
@@ -1389,10 +1364,8 @@ function moveSmartAI(entity, baseSpeed, aiLevel) {
     moveX = -moveY;
     moveY = temp;
   }
-
   moveWithObstacles(entity, moveX * baseSpeed, moveY * baseSpeed, entity.r);
 }
-
 function normalEnemyDps() {
   if (stage === 1) return 1.2;
   if (stage === 2) return 2.0;
@@ -1403,13 +1376,11 @@ function normalEnemyDps() {
   if (stage === 7) return 4.5;
   return 5.0;
 }
-
 function damagePlayer(dmg) {
   if (p.invincibility > 0 || shieldActive || ghost || admin.invincible || admin.god) return;
   p.hp -= dmg;
   p.invincibility = 0.5;
 }
-
 // 宝箱の確率ドロップ開封処理
 function openTreasureChestReward() {
   const r = Math.random() * 100;
@@ -1427,13 +1398,11 @@ function openTreasureChestReward() {
   coins += rewardCoin;
   msg.textContent = `📦 宝箱開封！ [${rarityName}] ${rewardCoin} G 獲得！`;
 }
-
 // 全8ステージ ボス固有必殺技（約4.6秒ごと）
 function triggerBossSpecialAttack() {
   const bossNames = ["リーフストーム", "ドリルキャノン", "グランドスマッシュ", "王国の召喚陣", "アクアヴォルテックス", "メテオフォール", "ギガサンダー", "ファイナル・ビッグバン"];
   const name = bossNames[stage - 1];
   msg.textContent = `⚠️ ボス大技発動：【${name}】！`;
-
   if (stage === 1) { // リーフストーム
     for (let i = 0; i < 8; i++) {
       let a = (Math.PI * 2 / 8) * i;
@@ -1468,17 +1437,14 @@ function triggerBossSpecialAttack() {
     damagePlayer(20);
   }
 }
-
 function update() {
-  if (gameOver || stageClear || isPausedForSpecial) return;
+  if (gameOver || stageClear) return;
   const dt = 1 / 60;
   attackCooldown = Math.max(0, attackCooldown - dt);
   if (wandCooldown > 0) wandCooldown = Math.max(0, wandCooldown - dt);
   if (p.invincibility > 0) p.invincibility -= dt;
   if (slowDebuffTimer > 0) slowDebuffTimer -= dt;
-
   let currentEnemyBaseSpeed = getBossBaseSpeed(stage);
-
   // Key Handler for Shield Activation
   const shieldKey = window.controlKeys.shield;
   if (keys[shieldKey] && shieldEquipped && shieldRemainingTime > 0) {
@@ -1488,7 +1454,6 @@ function update() {
   } else {
     shieldActive = false;
   }
-
   // Key Handler for Treasure Chest Opening
   const chestKey = window.controlKeys.chest;
   if (keys[chestKey] && !treasureChest.opened && Math.hypot(p.x - treasureChest.x, p.y - treasureChest.y) < 50) {
@@ -1501,7 +1466,6 @@ function update() {
   } else {
     isOpeningChest = false;
   }
-
   // Stage 8 Boss 召喚ロジック (前半：同時最大2体、累計10体まで召喚)
   if (stage === 8 && stage8TotalSummoned < 10 && minions.length < 2 && !admin.enemyStopped) {
     enemy.spawnTimer--;
@@ -1519,7 +1483,6 @@ function update() {
       enemy.spawnTimer = 500;
     }
   }
-
   // ボス固有大技タイマー（4.6秒 = 276フレーム）
   if (!admin.enemyStopped && stun <= 0) {
     bossSpecialTimer++;
@@ -1528,12 +1491,10 @@ function update() {
       triggerBossSpecialAttack();
     }
   }
-
   // Stage 6 Magma Zone Spawn
   if (stage === 6 && Math.random() < 0.02 && magmaZones.length < 4) {
     magmaZones.push({ x: 100 + Math.random() * 700, y: 80 + Math.random() * 340, r: 35, life: 300 });
   }
-
   magmaZones.forEach((mz) => {
     mz.life--;
     if (Math.hypot(p.x - mz.x, p.y - mz.y) < mz.r) {
@@ -1541,13 +1502,11 @@ function update() {
     }
   });
   magmaZones = magmaZones.filter(mz => mz.life > 0);
-
   if (isGatlingActive) {
     gatlingTimer--;
     if (gatlingTimer % 4 === 0) damageEnemy(4 * (kizuku2Active ? 2.0 : 1));
     if (gatlingTimer <= 0) isGatlingActive = false;
   }
-
   if (isBlackholeActive) {
     blackholeTimer--;
     const centerX = CANVAS_WIDTH / 2, centerY = CANVAS_HEIGHT / 2;
@@ -1562,24 +1521,18 @@ function update() {
     if (blackholeTimer % 10 === 0) damageEnemy(5 * (kizuku2Active ? 2.0 : 1));
     if (blackholeTimer <= 0) isBlackholeActive = false;
   }
-
   if (bigSlashAnimTimer > 0) bigSlashAnimTimer--;
-
   let speedMult = slowDebuffTimer > 0 ? 0.5 : 1.0;
   if (stage === 5) speedMult *= 0.85;
   let sp = (charging ? 2 : 4) * speedMult * (kizuku2Active ? 2.0 : 1);
-
   const ku = window.controlKeys.up, kd = window.controlKeys.down, kl = window.controlKeys.left, kr = window.controlKeys.right;
   let dx = 0, dy = 0;
   if (keys[ku] || keys["arrowup"]) dy -= sp;
   if (keys[kd] || keys["arrowdown"]) dy += sp;
   if (keys[kl] || keys["arrowleft"]) dx -= sp;
   if (keys[kr] || keys["arrowright"]) dx += sp;
-
   if (stage === 7) dx -= 0.6;
-
   if (dx !== 0 || dy !== 0) moveWithObstacles(p, dx, dy, p.r);
-
   if (dashTimer > 0) {
     moveWithObstacles(p, dashVX * (kizuku2Active ? 2.0 : 1), dashVY * (kizuku2Active ? 2.0 : 1), 20);
     dashTimer--;
@@ -1589,28 +1542,22 @@ function update() {
       carHitThisDash = true;
     }
   }
-
   p.x = Math.max(25, Math.min(CANVAS_WIDTH - 25, p.x));
   p.y = Math.max(25, Math.min(CANVAS_HEIGHT - 25, p.y));
-
   if (charging && attackCooldown <= 0) {
     if (charge < 100) charge += 1;
     else if (charge < 150) charge += 0.5;
   }
-
   if (ghostTimer > 0) { ghostTimer -= dt; if (ghostTimer <= 0) { ghostTimer = 0; ghost = false; msg.textContent = "👻 ゴースト終了"; } }
   if (rushDownTimer > 0) { rushDownTimer -= dt; if (rushDownTimer < 0) rushDownTimer = 0; }
   if (enemyRushing > 0) enemyRushing--;
   if (stun > 0) stun--;
-
   // Stage 8 ボス移動制限（前半無敵時は動かない、子分10体全滅後の後半タイマン覚醒で移動開始）
   const canBossMove = (stage !== 8) || (stage === 8 && stage8TotalSummoned >= 10 && minions.length === 0);
-
   if (!admin.enemyStopped && stun <= 0 && rushDownTimer <= 0 && lightningTimer <= 0 && !isBlackholeActive && canBossMove) {
     moveSmartAI(enemy, currentEnemyBaseSpeed, 0.5);
     if (Math.hypot(p.x - enemy.x, p.y - enemy.y) < 45) damagePlayer(normalEnemyDps() * dt * 60);
   }
-
   // Minion AI & Actions
   for (let i = minions.length - 1; i >= 0; i--) {
     let m = minions[i];
@@ -1618,9 +1565,7 @@ function update() {
       let mSpeed = m.type === "magma" ? 3.0 : 1.8;
       if (stage >= 5) mSpeed *= 0.9;
       moveSmartAI(m, mSpeed, 0.4);
-
       if (Math.hypot(p.x - m.x, p.y - m.y) < 38) damagePlayer(normalEnemyDps() * dt * 30);
-
       if (m.type === "wind" || m.type === "shield_minion" || m.type === "normal") {
         m.shootTimer--;
         if (m.shootTimer <= 0) {
@@ -1632,31 +1577,24 @@ function update() {
     }
     if (m.hp <= 0) minions.splice(i, 1);
   }
-
   // Magic Wand Orbs Update
   for (let i = magicOrbs.length - 1; i >= 0; i--) {
     let orb = magicOrbs[i];
     orb.life -= dt;
     if (orb.life <= 0) { magicOrbs.splice(i, 1); continue; }
-
     let target = enemy;
     let minDist = Math.hypot(enemy.x - orb.x, enemy.y - orb.y);
-
     minions.forEach(m => {
       let d = Math.hypot(m.x - orb.x, m.y - orb.y);
       if (d < minDist) { minDist = d; target = m; }
     });
-
     let speed = currentEnemyBaseSpeed * 1.3;
     if (speed < 3.5) speed = 3.5;
-
     let tdx = target.x - orb.x, tdy = target.y - orb.y, td = Math.hypot(tdx, tdy) || 1;
     orb.vx = orb.vx * 0.90 + (tdx / td) * speed * 0.10;
     orb.vy = orb.vy * 0.90 + (tdy / td) * speed * 0.10;
-
     orb.x += orb.vx * 1.2;
     orb.y += orb.vy * 1.2;
-
     let hit = false;
     for (let m of minions) {
       if (Math.hypot(orb.x - m.x, orb.y - m.y) < 25) {
@@ -1664,15 +1602,12 @@ function update() {
         hit = true; break;
       }
     }
-
     if (!hit && Math.hypot(orb.x - enemy.x, orb.y - enemy.y) < 30) {
       damageEnemy(orb.dmg);
       hit = true;
     }
-
     if (hit) magicOrbs.splice(i, 1);
   }
-
   // Boss Attack Patterns
   if ([2, 4, 5, 6, 8].includes(stage) && !admin.enemyStopped && lightningTimer <= 0 && enemyRushing <= 0) {
     enemyShootTimer++;
@@ -1683,7 +1618,6 @@ function update() {
       enemyBullets.push({ x: enemy.x, y: enemy.y, vx: edx / ed * 5, vy: edy / ed * 5, dmg: bulletDmg, enemy: true });
     }
   }
-
   if ([3, 4, 7, 8].includes(stage) && !admin.enemyStopped && rushDownTimer <= 0 && lightningTimer <= 0 && canBossMove) {
     if (enemyRushing > 0) {
       enemyRushing--;
@@ -1699,7 +1633,6 @@ function update() {
       }
     }
   }
-
   // Bullet Collision
   for (let i = enemyBullets.length - 1; i >= 0; i--) {
     const b = enemyBullets[i];
@@ -1713,7 +1646,6 @@ function update() {
         }
       }
       if (hitMinion) { enemyBullets.splice(i, 1); continue; }
-
       if (Math.hypot(b.x - enemy.x, b.y - enemy.y) < 28) { damageEnemy(b.dmg); enemyBullets.splice(i, 1); }
       else if (b.x < 0 || b.x > CANVAS_WIDTH || b.y < 0 || b.y > CANVAS_HEIGHT) { enemyBullets.splice(i, 1); }
     } else {
@@ -1721,7 +1653,6 @@ function update() {
       else if (b.x < 0 || b.x > CANVAS_WIDTH || b.y < 0 || b.y > CANVAS_HEIGHT) { enemyBullets.splice(i, 1); }
     }
   }
-
   for (let i = bulletHellBullets.length - 1; i >= 0; i--) {
     const b = bulletHellBullets[i];
     b.x += b.vx; b.y += b.vy;
@@ -1732,11 +1663,9 @@ function update() {
       }
     }
     if (hitM) { bulletHellBullets.splice(i, 1); continue; }
-
     if (Math.hypot(b.x - enemy.x, b.y - enemy.y) < 30) { damageEnemy(b.dmg); bulletHellBullets.splice(i, 1); }
     else if (b.x < 0 || b.x > CANVAS_WIDTH || b.y < 0 || b.y > CANVAS_HEIGHT) { bulletHellBullets.splice(i, 1); }
   }
-
   for (let i = boxes.length - 1; i >= 0; i--) {
     const box = boxes[i];
     if (Math.hypot(p.x - box.x, p.y - box.y) < 45) {
@@ -1750,11 +1679,8 @@ function update() {
       boxes.splice(i, 1);
     }
   }
-
   if (lightningTimer > 0) { lightningTimer -= dt; if (lightningTimer <= 0) lightningTimer = 0; }
-
   if (enemy.hp <= 0) { enemy.hp = 0; nextStage(); return; }
-
   if (p.hp <= 0) {
     p.hp = 0;
     if (revive) { revive = false; p.hp = 50; msg.textContent = "🗿 復活の石発動！"; }
@@ -1765,31 +1691,25 @@ function update() {
       return;
     }
   }
-
   document.getElementById("hp").textContent = Math.floor(p.hp);
   document.getElementById("maxHpText").textContent = Math.floor(p.max);
   document.getElementById("ehp").textContent = Math.floor(enemy.hp);
   document.getElementById("coinText").textContent = coins;
   document.getElementById("charge").value = charge;
   document.getElementById("specialStockText").textContent = specialStock;
-
   dmgText = dmgText.filter(t => { t.y -= 1; t.life--; return t.life > 0; });
   if (slashTimer > 0) slashTimer--;
 }
-
 function draw() {
   const bg = ["#72b95f", "#888", "#7da0d8", "#8b6b43", "#0284c7", "#7f1d1d", "#38bdf8", "#0f172a"][stage - 1];
   ctx.fillStyle = bg; ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
   ctx.font = "36px serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
   obstacles.forEach(o => ctx.fillText(o.type, o.x + o.w / 2, o.y + o.h / 2));
-
   magmaZones.forEach(mz => {
     ctx.fillStyle = "rgba(239, 68, 68, 0.5)";
     ctx.beginPath(); ctx.arc(mz.x, mz.y, mz.r, 0, Math.PI * 2); ctx.fill();
     ctx.font = "24px serif"; ctx.fillText("🌋", mz.x, mz.y);
   });
-
   if (!treasureChest.opened) {
     ctx.font = "32px serif";
     ctx.fillText("📦", treasureChest.x, treasureChest.y);
@@ -1800,7 +1720,6 @@ function draw() {
       ctx.fillRect(treasureChest.x - 20, treasureChest.y - 25, 40 * (treasureChest.progress / treasureChest.maxProgress), 6);
     }
   }
-
   // Stage 8 ボス無敵バリア描画
   if (stage === 8 && stage8TotalSummoned < 10) {
     ctx.strokeStyle = "rgba(56, 189, 248, 0.8)";
@@ -1808,13 +1727,10 @@ function draw() {
     ctx.beginPath(); ctx.arc(enemy.x, enemy.y, 48, 0, Math.PI * 2); ctx.stroke();
     ctx.lineWidth = 1;
   }
-
   ctx.strokeStyle = "rgba(255,0,0,0.4)"; ctx.beginPath(); ctx.arc(enemy.x, enemy.y, 40, 0, Math.PI * 2); ctx.stroke();
-
   if (weapon === "🏹") { ctx.strokeStyle = "blue"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
   if (weapon === "⚔️") { ctx.strokeStyle = "yellow"; ctx.beginPath(); ctx.arc(p.x, p.y, 52 + charge / 2, 0, Math.PI * 2); ctx.stroke(); }
   if (weapon === "🚙") { ctx.strokeStyle = "red"; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(mouse.x, mouse.y); ctx.stroke(); }
-
   if (bulletHellReady) {
     ctx.font = "28px serif";
     const colors = ["🔴", "🔵", "🟡", "🟢"];
@@ -1823,102 +1739,83 @@ function draw() {
       ctx.fillText(colors[Math.floor(i / 3)], p.x + Math.cos(a) * 55, p.y + Math.sin(a) * 55);
     }
   }
-
   ctx.font = "24px serif";
   bulletHellBullets.forEach(b => ctx.fillText(b.color, b.x, b.y));
-
   magicOrbs.forEach(orb => {
     ctx.fillStyle = "#a020f0";
     ctx.beginPath(); ctx.arc(orb.x, orb.y, orb.r, 0, Math.PI * 2); ctx.fill();
     ctx.strokeStyle = "#e080ff"; ctx.lineWidth = 2; ctx.stroke(); ctx.lineWidth = 1;
   });
-
   if (isGatlingActive) {
     ctx.strokeStyle = "#ffff00"; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(enemy.x, enemy.y); ctx.stroke();
     ctx.lineWidth = 1;
   }
-
   if (isBlackholeActive) {
     ctx.font = "64px serif"; ctx.fillText("🌀", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
   }
-
   if (bigSlashAnimTimer > 0) {
     ctx.strokeStyle = "#00ffff"; ctx.lineWidth = 12;
     ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.moveTo(CANVAS_WIDTH, 0); ctx.lineTo(0, CANVAS_HEIGHT); ctx.stroke(); ctx.lineWidth = 1;
   }
-
   ctx.save();
   if (p.invincibility <= 0 || Math.floor(Date.now() / 100) % 2 === 0) {
     ctx.font = "36px serif"; ctx.fillText(ghost ? "👻" : "😂", p.x, p.y);
   }
   ctx.restore();
-
   let enemyFace = "😈";
   if (stun > 0 || rushDownTimer > 0 || lightningTimer > 0 || isBlackholeActive) enemyFace = "😵";
   ctx.font = "36px serif"; ctx.fillText(enemyFace, enemy.x, enemy.y);
-
   minions.forEach(m => {
     ctx.font = "28px serif";
     let icon = m.type === "jellyfish" ? "🪼" : m.type === "magma" ? "🔥" : m.type === "wind" ? "🌪️" : m.type === "shield_minion" ? "🛡️" : "👿";
     ctx.fillText(icon, m.x, m.y);
-
     let barW = 34, barH = 5, barX = m.x - barW / 2, barY = m.y - 20;
     ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(barX - 1, barY - 1, barW + 2, barH + 2);
     let ratio = Math.max(0, m.hp / m.maxHp);
     let hue = ratio * 120;
     ctx.fillStyle = `hsl(${hue}, 100%, 50%)`; ctx.fillRect(barX, barY, barW * ratio, barH);
   });
-
   ctx.font = "32px serif";
   boxes.forEach(box => ctx.fillText("🎁", box.x, box.y));
-
   ctx.font = "20px sans-serif";
   enemyBullets.forEach(b => ctx.fillText(b.enemy ? "🔴" : "➤", b.x, b.y));
   dmgText.forEach(t => {
     ctx.save(); ctx.font = "bold 20px sans-serif"; ctx.lineWidth = 5;
     ctx.strokeStyle = "#000"; ctx.strokeText(t.t, t.x, t.y); ctx.fillStyle = "#ffeb00"; ctx.fillText(t.t, t.x, t.y); ctx.restore();
   });
-
   if (slashTimer > 0) {
     ctx.strokeStyle = "yellow"; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(p.x, p.y, 72 + charge / 2, 0, Math.PI * 2); ctx.stroke(); ctx.lineWidth = 1;
   }
-
   if (shieldActive) { ctx.font = "34px serif"; ctx.fillText("🛡️", p.x, p.y - 35); }
   if (ghost) { ctx.font = "14px sans-serif"; ctx.fillStyle = "#fff"; ctx.fillText("GHOST", p.x, p.y + 25); }
   if (lightningTimer > 0) { ctx.font = "34px serif"; ctx.fillText("⚡️", enemy.x, enemy.y - 35); }
-
   ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = "white"; ctx.font = "18px sans-serif";
   ctx.fillText("攻撃 ×" + (atkBuff * (kizuku2Active ? 2.0 : 1)).toFixed(1), 20, 25);
   ctx.fillText("🛡️ " + (shieldEquipped ? shieldRemainingTime.toFixed(1) + "s" : "なし"), 180, 25);
   ctx.fillText("🗿 " + (revive ? "所持" : "なし"), 300, 25);
   ctx.fillText("💰 " + coins + " G", 400, 25);
-
   if (weapon === "🪄" && wandCooldown > 0) {
     ctx.fillStyle = "#ffcc00";
     ctx.fillText("🪄 CD: " + wandCooldown.toFixed(1) + "s", 520, 25);
   }
-
   if (stageClear) {
     ctx.fillStyle = "rgba(0,0,0,.55)"; ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.fillStyle = "white"; ctx.font = "48px sans-serif"; ctx.textAlign = "center"; ctx.fillText("🏆 STAGE CLEAR!", CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
   }
 }
-
 // 必殺技お絵描き処理
 const spCanvas = document.getElementById("specialCanvas");
 const spCtx = spCanvas.getContext("2d");
 let spDrawing = false;
 let spPoints = [];
-
 function openSpecialCanvas() {
   isPausedForSpecial = true;
   document.getElementById("specialModal").classList.remove("hidden");
   spCtx.clearRect(0, 0, spCanvas.width, spCanvas.height);
   spPoints = [];
 }
-
 spCanvas.addEventListener("pointerdown", (e) => {
   spDrawing = true;
   spCtx.strokeStyle = "#ff3366"; spCtx.lineWidth = 6; spCtx.lineCap = "round"; spCtx.beginPath();
@@ -1926,33 +1823,26 @@ spCanvas.addEventListener("pointerdown", (e) => {
   const x = e.clientX - rect.left, y = e.clientY - rect.top;
   spCtx.moveTo(x, y); spPoints.push({x, y});
 });
-
 spCanvas.addEventListener("pointermove", (e) => {
   if (!spDrawing) return;
   const rect = spCanvas.getBoundingClientRect();
   const x = e.clientX - rect.left, y = e.clientY - rect.top;
   spCtx.lineTo(x, y); spCtx.stroke(); spPoints.push({x, y});
 });
-
 window.addEventListener("pointerup", () => { spDrawing = false; });
-
 function executeSpecialAttack() {
   document.getElementById("specialModal").classList.add("hidden");
   isPausedForSpecial = false;
   if (specialStock > 0) specialStock--;
-
   const dmgMul = kizuku2Active ? 2.0 : 1;
-
   if (spPoints.length < 5) {
     damageEnemy(50 * dmgMul);
     msg.textContent = "必殺技：簡易攻撃 (50ダメージ)";
     return;
   }
-
   const start = spPoints[0];
   const end = spPoints[spPoints.length - 1];
   const dist = Math.hypot(end.x - start.x, end.y - start.y);
-
   let turns = 0;
   for(let i = 2; i < spPoints.length; i++) {
     let v1 = {x: spPoints[i-1].x - spPoints[i-2].x, y: spPoints[i-1].y - spPoints[i-2].y};
@@ -1960,7 +1850,6 @@ function executeSpecialAttack() {
     let dot = v1.x * v2.x + v1.y * v2.y;
     if (dot < 0) turns++;
   }
-
   if (dist < 45 && spPoints.length > 25) {
     if (spPoints.length > 60) {
       isBlackholeActive = true;
@@ -1971,7 +1860,7 @@ function executeSpecialAttack() {
       stun = 180;
       msg.textContent = "💥 必殺技：【超巨大爆発】(80ダメージ＋スタン)";
     }
-  } 
+  }
   else if (turns >= 2) {
     damageEnemy(120 * dmgMul);
     enemyBullets = enemyBullets.filter(b => !b.enemy);
@@ -1982,13 +1871,12 @@ function executeSpecialAttack() {
     isGatlingActive = true;
     gatlingTimer = 180;
     msg.textContent = "🔫 必殺技：【ガトリング・バースト】";
-  } 
+  }
   else {
     damageEnemy(100 * dmgMul);
     msg.textContent = "☄️ 必殺技：【アルティメット・メテオ】(100ダメージ)";
   }
 }
-
 function updateKizukuUI() {
   document.getElementById("kzCount_heal").textContent = `(${kizukuItems.heal})`;
   document.getElementById("kzCount_atk").textContent = `(${kizukuItems.atk})`;
@@ -1997,7 +1885,6 @@ function updateKizukuUI() {
   document.getElementById("kzCount_bullet").textContent = `(${kizukuItems.bullet})`;
   document.getElementById("kzCount_lightning").textContent = `(${kizukuItems.lightning})`;
 }
-
 function updateRikuUI() {
   document.getElementById("rkCount_bomb").textContent = `(${rikuSpecials.bomb})`;
   document.getElementById("rkCount_gatling").textContent = `(${rikuSpecials.gatling})`;
@@ -2005,7 +1892,6 @@ function updateRikuUI() {
   document.getElementById("rkCount_blackhole").textContent = `(${rikuSpecials.blackhole})`;
   document.getElementById("rkCount_slash").textContent = `(${rikuSpecials.slash})`;
 }
-
 // Smartphone controls: virtual move/aim sticks and touch action buttons.
 (function initMobileControls() {
   const moveStick = document.getElementById('moveStick');
@@ -2016,7 +1902,6 @@ function updateRikuUI() {
   const specialBtn = document.getElementById('mobileSpecial');
   const shieldBtn = document.getElementById('mobileShield');
   const chestBtn = document.getElementById('mobileChest');
-
   let movePointer = null, aimPointer = null;
   const resetKeys = () => {
     keys['arrowup'] = keys['arrowdown'] = keys['arrowleft'] = keys['arrowright'] = false;
@@ -2046,12 +1931,10 @@ function updateRikuUI() {
   moveStick.addEventListener('pointermove', e => { if (e.pointerId===movePointer) { e.preventDefault(); updateStick(moveStick,moveKnob,e,true); } }, {passive:false});
   function stopMove(e) { if (e.pointerId===movePointer) { e.preventDefault(); movePointer=null; resetKeys(); } }
   moveStick.addEventListener('pointerup', stopMove, {passive:false}); moveStick.addEventListener('pointercancel', stopMove, {passive:false});
-
   aimStick.addEventListener('pointerdown', e => { if (deviceMode !== 'mobile') return; e.preventDefault(); aimPointer=e.pointerId; aimStick.setPointerCapture?.(e.pointerId); updateStick(aimStick,aimKnob,e,false); }, {passive:false});
   aimStick.addEventListener('pointermove', e => { if (e.pointerId===aimPointer) { e.preventDefault(); updateStick(aimStick,aimKnob,e,false); } }, {passive:false});
   function stopAim(e) { if (e.pointerId===aimPointer) { e.preventDefault(); aimPointer=null; aimKnob.style.transform='translate(-50%,-50%)'; } }
   aimStick.addEventListener('pointerup', stopAim, {passive:false}); aimStick.addEventListener('pointercancel', stopAim, {passive:false});
-
   // Multi-touch: keep track of every finger holding the attack button.
   const attackPointers = new Set();
   function attackPointerDown(e) {
@@ -2069,14 +1952,12 @@ function updateRikuUI() {
   attackBtn.addEventListener('pointerdown', attackPointerDown, {passive:false});
   attackBtn.addEventListener('pointerup', attackPointerUp, {passive:false});
   attackBtn.addEventListener('pointercancel', attackPointerUp, {passive:false});
-
   specialBtn.addEventListener('pointerdown', e => {
     if (deviceMode !== 'mobile') return; e.preventDefault();
     if (!isPausedForSpecial && !gameOver && !stageClear) {
       if (specialStock > 0) openSpecialCanvas(); else msg.textContent = '⚠️ 必殺技のストックがありません！';
     }
   }, {passive:false});
-
   function holdKeyButton(btn, key) {
     // Multi-touch: the key stays pressed until all fingers using this button leave.
     const pointers = new Set();
@@ -2098,7 +1979,6 @@ function updateRikuUI() {
   holdKeyButton(shieldBtn, window.controlKeys.shield);
   holdKeyButton(chestBtn, window.controlKeys.chest);
 })();
-
 function loop() {
   if (!gameArea.classList.contains("hidden")) update();
   document.getElementById("atkText").textContent = (atkBuff * (kizuku2Active ? 2.0 : 1)).toFixed(1);
@@ -2108,23 +1988,43 @@ function loop() {
   requestAnimationFrame(loop);
 }
 loop();
-
 // Admin & Special Code System
 (function initAdmin() {
   const hush = document.getElementById("hushBtn");
   const codeBox = document.getElementById("specialCodeBox");
   const codeInput = document.getElementById("specialCodeInput");
   const codeMsg = document.getElementById("specialCodeMsg");
-
-  hush.onclick = () => { codeBox.classList.remove("hidden"); codeInput.focus(); };
+  function openAdminPanel() {
+    if (!adminUnlocked) {
+      codeBox.classList.remove("hidden");
+      codeInput.focus();
+      return;
+    }
+    // 攻撃状態を残さない
+    charging = false;
+    charge = 0;
+    const mobileControls = document.getElementById("mobileControls");
+    if (mobileControls) { mobileControls.style.pointerEvents = "none"; mobileControls.style.display = "none"; }
+    panel.classList.remove("hidden");
+    document.getElementById("adminBody").style.display = "block";
+    document.getElementById("adminArrow").textContent = "▲";
+  }
+  function closeAdminPanel() {
+    panel.classList.add("hidden");
+    charging = false;
+    charge = 0;
+    const mobileControls = document.getElementById("mobileControls");
+    if (mobileControls && deviceMode === "mobile" && !gameOver && !stageClear) { mobileControls.style.display = "block"; mobileControls.style.pointerEvents = "none"; }
+  }
+  hush.onclick = openAdminPanel;
+  document.getElementById("adminClose").onclick = (e) => { e.stopPropagation(); closeAdminPanel(); };
   document.getElementById("specialCodeBack").onclick = () => codeBox.classList.add("hidden");
-
   document.getElementById("specialCodeCheck").onclick = () => {
     const code = codeInput.value.trim().toLowerCase();
     if (code === "gaku admin") {
       adminUnlocked = true;
-      document.getElementById("adminPanel").classList.remove("hidden");
       codeBox.classList.add("hidden");
+      openAdminPanel();
       codeInput.value = "";
       msg.textContent = "👑 管理者パネルを解放しました！";
     } else if (code === "kizuku2") {
@@ -2145,32 +2045,24 @@ loop();
       codeMsg.textContent = "❌ コードが違います";
     }
   };
-
   const panel = document.getElementById("adminPanel");
-  let collapsed = false;
   document.getElementById("adminHead").onclick = () => {
-    collapsed = !collapsed;
-    document.getElementById("adminBody").style.display = collapsed ? "none" : "block";
-    document.getElementById("adminArrow").textContent = collapsed ? "▼" : "▲";
+    // ヘッダーを押してもゲーム状態は変えず、閉じるボタンだけで閉じる
   };
-
   function god(on) {
     admin.god = on; admin.invincible = on; admin.noCooldown = on;
     admin.autoHeal = on; admin.attackMax = on; admin.enemyStopped = on;     window.adminNoCooldown = on;
   }
   window.godModeFunction = god;
-
   panel.querySelectorAll("[data-a]").forEach(b => b.onclick = () => {
     const a = b.dataset.a;
     if (a === "god") god(!admin.god);
     else { admin[a] = !admin[a]; if (a === "noCooldown") window.adminNoCooldown = admin.noCooldown; }
   });
-
   document.getElementById("admHeal").onclick = () => { p.hp = p.max; };
   document.getElementById("admAddCoin").onclick = () => { coins += 500; msg.textContent = "💰 コイン +500 追加！"; };
   document.getElementById("admOpenShop").onclick = () => { openShop(1); };
   document.getElementById("admClearStage").onclick = () => { enemy.hp = 0; nextStage(); };
-
   document.getElementById("admMaxSpecial").onclick = () => {
     addRandomSpecialStock();
   };
@@ -2194,7 +2086,6 @@ loop();
     damageEnemy(120 * (kizuku2Active ? 2.0 : 1)); enemyBullets = enemyBullets.filter(b => !b.enemy); bigSlashAnimTimer = 20;
     msg.textContent = "⚔️ 必殺技：【広範囲スラッシュ】(弾全消去+120ダメ)";
   };
-
   document.getElementById("admItem").onclick = () => {
     const i = prompt("❤ 💪 🛡️ 👻 🔮 ⚡️");
     if (i) {
@@ -2206,10 +2097,8 @@ loop();
       else if (i === "⚡️") { lightningTimer = 2.3; damageEnemy(enemy.maxHp * 0.05); }
     }
   };
-
   document.getElementById("admDown").onclick = () => lightningTimer = 2.3;
   document.getElementById("admEnemyHP").onclick = () => { const v = Number(prompt("敵HP", enemy.hp)); if (Number.isFinite(v)) enemy.hp = Math.max(0, v); };
-
   document.getElementById("admSpeed").onclick = () => {
     const input = prompt("敵速度倍率を入力してください（現在: " + enemySpeedMul + "）", enemySpeedMul);
     if (input !== null) {
@@ -2220,22 +2109,41 @@ loop();
       }
     }
   };
-
-  panel.querySelectorAll("[data-s]").forEach(b => b.onclick = () => {
-    // PC版は確認あり、スマホ版はタップですぐステージ移動。
-    if (deviceMode !== 'mobile' && !confirm("このステージへ移動しますか？")) return;
-    const s = +b.dataset.s;
-    stage = Math.max(1, Math.min(8, s));
+  function changeStage(newStage) {
+    const s = Math.max(1, Math.min(8, Number(newStage) || 1));
+    stage = s;
     setStageObstacles(stage);
-    enemy.x = 700; enemy.y = 250; enemy.maxHp = stageBosses[stage - 1].hp; enemy.hp = enemy.maxHp;
+    enemy.x = 700;
+    enemy.y = 250;
+    enemy.maxHp = stageBosses[stage - 1].hp;
+    enemy.hp = enemy.maxHp;
     createMinionsForStage(stage);
-    boxes = []; spawnBox(); p.x = 100; p.y = 250; p.hp = p.max;
-    enemyBullets = []; magmaZones = [];
-    enemyShootTimer = 0; rushTimer = 0; rushDownTimer = 0; enemyRushing = 0; stun = 0; attackCooldown = 0; bossSpecialTimer = 0;
+    boxes = [];
+    spawnBox();
+    p.x = 100;
+    p.y = 250;
+    p.hp = p.max;
+    enemyBullets = [];
+    magmaZones = [];
+    enemyShootTimer = 0;
+    rushTimer = 0;
+    rushDownTimer = 0;
+    enemyRushing = 0;
+    stun = 0;
+    attackCooldown = 0;
+    bossSpecialTimer = 0;
+    charging = false;
+    charge = 0;
     treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
     document.getElementById("stageLabel").textContent = stageBosses[stage - 1].name;
+  }
+  panel.querySelectorAll("[data-s]").forEach(b => b.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // PC版は確認あり、スマホ版はタップですぐステージ移動。
+    if (deviceMode !== 'mobile' && !confirm("このステージへ移動しますか？")) return;
+    changeStage(b.dataset.s);
   });
-
   document.getElementById("admRates").onclick = () => {
     let box = document.getElementById("adminRateEditor");
     if (!box) {
@@ -2262,7 +2170,6 @@ loop();
     const rows = document.getElementById("adminRateRows");
     rows.innerHTML = Object.entries(window.itemRates).map(([item, rate]) => `<label style="display:block;margin:5px 0">${item} <input data-item="${item}" type="text" value="${rate}" style="width:70px"> %</label>`).join("");
   };
-
   document.getElementById("admBoxCount").onclick = () => {
     const input = prompt("ドロップボックス数を設定（1〜10）", window.adminBoxCount);
     if (input !== null) {
@@ -2274,14 +2181,12 @@ loop();
       }
     }
   };
-
   document.getElementById("admReset").onclick = () => {
     god(false);
     enemySpeedMul = 1;
     msg.textContent = "🔄 管理者効果をリセットしました";
   };
 })();
-
 // Kizuku Panel Handlers
 (function initKizuku() {
   document.getElementById("kzHeal").onclick = () => {
@@ -2303,7 +2208,6 @@ loop();
     if (kizukuItems.lightning > 0) { kizukuItems.lightning--; lightningTimer = 3.5; damageEnemy(enemy.maxHp * 0.1); updateKizukuUI(); msg.textContent = "⚡️ Kizuku: 敵ダウン！"; }
   };
 })();
-
 // Riku Panel Handlers
 (function initRiku() {
   document.getElementById("rkBomb").onclick = () => {
