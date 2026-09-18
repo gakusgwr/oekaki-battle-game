@@ -320,6 +320,59 @@ body.mobile-mode #mobileControls { z-index:160; }
   body.mobile-mode #judgeBtn,
   body.mobile-mode #clearBtn { font-size:11px; padding:4px 8px; }
 }
+
+/* Final mobile landscape touch/UI fix */
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #draw {
+    position: relative;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  body.mobile-mode #draw h2,
+  body.mobile-mode #draw #guideInstruction,
+  body.mobile-mode #draw .weapon-select-box,
+  body.mobile-mode #draw #drawCanvas,
+  body.mobile-mode #draw #judgeBtn,
+  body.mobile-mode #draw #clearBtn,
+  body.mobile-mode #draw #result,
+  body.mobile-mode #draw #battleBtn {
+    margin-left: 8px !important;
+  }
+  body.mobile-mode #draw .weapon-select-box {
+    align-self: flex-start;
+    width: min(360px, 48vw);
+  }
+  body.mobile-mode #drawCanvas {
+    display: block;
+    width: min(38vh, 48vw);
+    height: min(38vh, 48vw);
+  }
+  body.mobile-mode #judgeBtn,
+  body.mobile-mode #clearBtn,
+  body.mobile-mode #battleBtn {
+    display: block;
+    position: relative;
+    left: 0;
+    z-index: 1000;
+    touch-action: manipulation;
+    pointer-events: auto;
+  }
+  body.mobile-mode #battleBtn {
+    font-size: 15px !important;
+    padding: 7px 16px !important;
+    margin-top: 4px !important;
+  }
+  body.mobile-mode #adminPanel {
+    left: 6px !important;
+    right: auto !important;
+    top: 6px !important;
+    width: min(210px, 30vw) !important;
+    max-height: 86vh !important;
+    z-index: 2000 !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -587,16 +640,23 @@ document.getElementById("gearBtn").onclick = openKeySettings;
   const bind = (id, action) => {
     const el = document.getElementById(id);
     if (!el) return;
-    let lastPointerTime = 0;
+    const activePointers = new Set();
+    el.style.touchAction = "manipulation";
     el.addEventListener("pointerdown", e => {
       if (deviceMode !== "mobile") return;
       e.preventDefault();
       e.stopPropagation();
-      const now = performance.now();
-      if (now - lastPointerTime < 80) return;
-      lastPointerTime = now;
+      activePointers.add(e.pointerId);
+      try { el.setPointerCapture(e.pointerId); } catch (_) {}
       action();
     }, { passive:false });
+    const release = e => {
+      e.preventDefault();
+      activePointers.delete(e.pointerId);
+      try { el.releasePointerCapture(e.pointerId); } catch (_) {}
+    };
+    el.addEventListener("pointerup", release, { passive:false });
+    el.addEventListener("pointercancel", release, { passive:false });
   };
   bind("judgeBtn", judge);
   bind("clearBtn", clearCanvas);
