@@ -99,12 +99,21 @@ body.mobile-mode #msg { font-size:16px; }
 body.mobile-mode #adminPanel,
 body.mobile-mode #kizukuPanel,
 body.mobile-mode #rikuPanel {
-  left:auto; right:6px; top:6px; width:180px; max-height:42vh;
+  left:6px; right:auto; top:6px; width:180px; max-width:42vw; max-height:42vh;
   z-index:180;
+}
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #adminPanel {
+    left:6px; right:auto; top:6px; width:min(210px, 30vw); max-height:86vh;
+  }
+  body.mobile-mode #hushBtn {
+    right:8px; left:auto;
+  }
 }
 body.mobile-mode #adminPanel button,
 body.mobile-mode #kizukuPanel button,
-body.mobile-mode #rikuPanel button { font-size:12px; padding:5px; }
+body.mobile-mode #rikuPanel button { font-size:12px; padding:5px; touch-action: manipulation; }
+body.mobile-mode #adminPanel { pointer-events:auto; }
 body.mobile-mode #mobileControls { z-index:160; }
 #mobileControls { position:fixed; inset:0; z-index:140; pointer-events:none; }
 .mobile-stick, .mobile-btn { pointer-events:auto; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; touch-action:none; }
@@ -267,7 +276,40 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #draw {
+    position: relative;
+  }
+  body.mobile-mode #judgeBtn,
+  body.mobile-mode #clearBtn,
+  body.mobile-mode #battleBtn {
+    position: relative;
+    z-index: 20;
+    touch-action: manipulation;
+  }
+  body.mobile-mode #judgeBtn {
+    margin-left: 8px;
+  }
+  body.mobile-mode #battleBtn {
+    margin-left: 8px;
+  }
+}
+
 @media (max-height: 520px) and (orientation: landscape) {
+  body.mobile-mode #draw {
+    text-align: left;
+    padding-left: 8px;
+  }
+  body.mobile-mode #draw h2,
+  body.mobile-mode #draw .weapon-select-box,
+  body.mobile-mode #draw #guideInstruction,
+  body.mobile-mode #draw #drawCanvas,
+  body.mobile-mode #draw #judgeBtn,
+  body.mobile-mode #draw #clearBtn,
+  body.mobile-mode #draw #result,
+  body.mobile-mode #draw #battleBtn {
+    margin-left: 8px;
+  }
   body.mobile-mode #drawCanvas {
     width:min(38vh, 48vw);
     height:min(38vh, 48vw);
@@ -299,11 +341,11 @@ body.mobile-mode #mobileControls { z-index:160; }
   </div>
   <p id="guideInstruction" style="color:#ffcc00; font-size:14px; margin-bottom:8px;">★マークを丁寧になぞろう！ずれると他の武器になっちゃうぞ！</p>
   <canvas id="drawCanvas" width="400" height="400"></canvas><br>
-  <button id="judgeBtn" onclick="judge()">武器決定（やり直し不可！）</button>
-  <button id="clearBtn" onclick="clearCanvas()">描き直す</button>
+  <button id="judgeBtn">武器決定（やり直し不可！）</button>
+  <button id="clearBtn">描き直す</button>
   <p id="result" style="margin: 10px 0; font-size: 20px; font-weight:bold;"></p>
   <button id="gearBtn" title="キー設定">⚙️</button>
-  <button id="battleBtn" class="hidden" onclick="startCountdown()" style="font-size: 18px; background: #28a745;">戦闘開始</button>
+  <button id="battleBtn" class="hidden" style="font-size: 18px; background: #28a745;">戦闘開始</button>
 </div>
 <button id="hushBtn" title="スペシャルコード">🤫</button>
 <div id="count" class="hidden" style="margin-top: 100px;"><h1 id="countText" style="font-size: 72px;">3</h1></div>
@@ -539,6 +581,27 @@ function renderKeyRows() {
 }
 function openKeySettings() { renderKeyRows(); document.getElementById("keyWaiting").textContent = "変更する項目を選んでください"; document.getElementById("keySetting").classList.remove("hidden"); }
 document.getElementById("gearBtn").onclick = openKeySettings;
+// Mobile: make important action buttons respond directly to each touch/pointer.
+// This avoids relying only on the browser-generated single-finger click event.
+(function enableMultiTouchActionButtons() {
+  const bind = (id, action) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let lastPointerTime = 0;
+    el.addEventListener("pointerdown", e => {
+      if (deviceMode !== "mobile") return;
+      e.preventDefault();
+      e.stopPropagation();
+      const now = performance.now();
+      if (now - lastPointerTime < 80) return;
+      lastPointerTime = now;
+      action();
+    }, { passive:false });
+  };
+  bind("judgeBtn", judge);
+  bind("clearBtn", clearCanvas);
+  bind("battleBtn", startCountdown);
+})();
 document.getElementById("keyCheckBtn").onclick = () => {
   document.getElementById("keySummary").innerHTML = Object.keys(keyLabels).map(a => `<p>${keyLabels[a]} → <b>${keyText(window.controlKeys[a])}</b></p>`).join("");
   document.getElementById("keySetting").classList.add("hidden");
