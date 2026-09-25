@@ -841,7 +841,6 @@ document.getElementById("gearBtn").onclick = openKeySettings;
     const activePointers = new Set();
     el.style.touchAction = "manipulation";
     el.addEventListener("pointerdown", e => {
-      if (deviceMode !== "mobile") return;
       e.preventDefault();
       e.stopPropagation();
       activePointers.add(e.pointerId);
