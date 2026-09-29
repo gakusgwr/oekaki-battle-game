@@ -18,23 +18,6 @@ button:disabled { opacity: 0.5; cursor: not-allowed; background: #222; }
 #gearBtn { position: absolute; right: 8px; top: 8px; font-size: 24px; padding: 6px; }
 #hushBtn { position: fixed; right: 54px; top: 8px; font-size: 24px; padding: 6px; z-index: 310; }
 #keySetting, #keyConfirm, #specialCodeBox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100; color: #fff; padding: 24px; text-align: center; overflow-y: auto; }
-#specialCodeBox input,
-body.mobile-mode #publicSpecialCodeUI input {
-  position: relative;
-  z-index: 1002;
-  pointer-events: auto !important;
-  touch-action: auto !important;
-  user-select: text !important;
-  -webkit-user-select: text !important;
-  -webkit-touch-callout: default !important;
-  font-size: 18px !important;
-}
-body.mobile-mode #publicSpecialCodeUI,
-body.mobile-mode #publicSpecialCodeUI button {
-  pointer-events: auto !important;
-  touch-action: manipulation !important;
-}
-
 .keyRow { margin: 12px; }
 input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
 .weapon-select-box {
@@ -509,47 +492,6 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
-/* Mobile-only special code placement: keep it inside the drawing screen without blocking controls */
-@media (max-width: 900px) {
-  body.mobile-mode #publicSpecialCodeUI {
-    position: absolute !important;
-    right: 8px !important;
-    bottom: 8px !important;
-    width: min(300px, 36vw) !important;
-    max-width: 36vw !important;
-    margin: 0 !important;
-    z-index: 3000 !important;
-    pointer-events: auto !important;
-    touch-action: auto !important;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-  }
-  body.mobile-mode #publicSpecialCodeUI input {
-    width: min(180px, 22vw) !important;
-    font-size: 16px !important;
-    pointer-events: auto !important;
-    touch-action: auto !important;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-  }
-  body.mobile-mode #publicSpecialCodeUI button {
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
-  }
-}
-@media (max-width: 600px) and (orientation: portrait) {
-  body.mobile-mode #publicSpecialCodeUI {
-    left: 6px !important;
-    right: 6px !important;
-    bottom: 6px !important;
-    width: auto !important;
-    max-width: none !important;
-  }
-  body.mobile-mode #publicSpecialCodeUI input {
-    width: min(55vw, 210px) !important;
-  }
-}
-
 /* FINAL REQUESTED MOBILE LANDSCAPE DRAWING LAYOUT */
 @media (max-width: 900px) and (orientation: landscape) {
   body.mobile-mode #draw {
@@ -629,6 +571,39 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
+
+/* Mobile special-code input: keep it tappable and out of the way */
+@media (max-width: 900px) {
+  body.mobile-mode #publicSpecialCodeUI {
+    position: fixed !important;
+    right: 8px !important;
+    bottom: 8px !important;
+    z-index: 3000 !important;
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    box-sizing: border-box !important;
+    max-width: min(320px, 45vw) !important;
+  }
+  body.mobile-mode #publicSpecialCodeUI input {
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
+    font-size: 16px !important;
+  }
+  body.mobile-mode #publicSpecialCodeUI button {
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+  }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  body.mobile-mode #publicSpecialCodeUI {
+    left: 6px !important;
+    right: 6px !important;
+    bottom: 6px !important;
+    max-width: none !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -836,25 +811,11 @@ const drawDiv = document.getElementById("draw");
 const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
 let deviceMode = 'pc';
-function chooseDevice(mode) {
+async function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
   goDraw();
-}
-
-async function requestMobileLandscape() {
-  if (deviceMode !== 'mobile') return;
-  try {
-    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
-      await document.documentElement.requestFullscreen();
-    }
-  } catch (e) {}
-  try {
-    if (screen.orientation && screen.orientation.lock) {
-      await screen.orientation.lock('landscape');
-    }
-  } catch (e) {}
 }
 function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
 window.controlKeys = { attack: "e", chest: "f", shield: "g", up: "w", down: "s", left: "a", right: "d" };
@@ -961,7 +922,8 @@ function getStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
   }
   return points;
 }
-const starPoints = getStarPoints(200, 200, 5, 100, 45);const swordPoints = [
+const starPoints = getStarPoints(200, 200, 5, 100, 45);
+const swordPoints = [
   {x: 200, y: 50}, {x: 220, y: 80}, {x: 220, y: 260},
   {x: 270, y: 260}, {x: 270, y: 280}, {x: 220, y: 280},
   {x: 220, y: 350}, {x: 180, y: 350}, {x: 180, y: 280},
@@ -1860,7 +1822,8 @@ function update() {
   } else if (stage === 4 && enemy.hp > 0 && !admin.enemyStopped) {
     enemy.spawnTimer--;
     if (enemy.spawnTimer <= 0) {
-      if (minions.length < 5) {        minions.push({ x: enemy.x, y: enemy.y, hp: 33, maxHp: 33, atk: 10, r: 18, type: "normal", shootTimer: 80 });
+      if (minions.length < 5) {
+        minions.push({ x: enemy.x, y: enemy.y, hp: 33, maxHp: 33, atk: 10, r: 18, type: "normal", shootTimer: 80 });
       }
       enemy.spawnTimer = 500;
     }
@@ -2685,7 +2648,7 @@ loop();
     box.innerHTML =
       '<b>🔑 特殊コード</b><br>' +
       '<span>HP20 → 最大HP +20</span><br>' +
-      '<span>Lucky Boost → 📦ボックス・🧰宝箱のレア確率UP</span><br><span>3？？？ → 制作者「コードは隠れているぞ！宝箱をあけろ！📦️」</span><br>' +
+      '<span>Lucky Boost → 📦ボックス・🧰宝箱のレア確率UP</span><br>' +
       '<span id="specialCodeDiscovered" style="display:none">Special Code → 敵の攻撃力・HP低下</span>' +
       '<div style="margin-top:7px">' +
       '<input id="publicSpecialCodeInput" type="password" autocomplete="off" placeholder="コードを入力" style="font-size:16px;padding:5px;width:210px">' +
@@ -2693,13 +2656,7 @@ loop();
       '</div>' +
       '<p id="publicSpecialCodeMsg" style="margin-top:5px;color:#ffd700;font-size:13px"></p>';
     drawDiv.appendChild(box);
-    const publicInput = document.getElementById("publicSpecialCodeInput");
-    const publicButton = document.getElementById("publicSpecialCodeBtn");
-    publicInput.addEventListener("pointerdown", e => e.stopPropagation(), {passive:false});
-    publicInput.addEventListener("pointerup", e => e.stopPropagation(), {passive:false});
-    publicButton.addEventListener("pointerdown", e => e.stopPropagation(), {passive:false});
-    publicButton.addEventListener("pointerup", e => e.stopPropagation(), {passive:false});
-    publicButton.onclick=()=>{
+    document.getElementById("publicSpecialCodeBtn").onclick=()=>{
       const input=document.getElementById("publicSpecialCodeInput");
       const value=input.value;
       if(useSpecialCode(value)){
@@ -2736,3 +2693,97 @@ loop();
         isPausedForSpecial=false;
         msg.textContent="🔐 Special Codeを入手しました！";
       };
+    }else{
+      modal.style.display="flex";
+    }
+  }
+
+  const originalUpdate = update;
+  update = function(){
+    if(isPausedForSpecial) return;
+    return originalUpdate.apply(this,arguments);
+  };
+
+  const originalDamagePlayer = damagePlayer;
+  damagePlayer = function(dmg){
+    if(specialCodes.specialActive) dmg *= 0.95;
+    return originalDamagePlayer.call(this,dmg);
+  };
+
+  const originalWeightedItem = weightedItem;
+  weightedItem = function(){
+    return originalWeightedItem();
+  };
+
+  const originalChestReward = openTreasureChestReward;
+  openTreasureChestReward = function(){
+    const rates=specialCodes.luckyBoost ? luckyChest : normalChest;
+    const r=Math.random()*100;
+    let rewardCoin=60, rarityName="📦 通常";
+    if(r < rates.coin60){ rewardCoin=60; rarityName="📦 通常"; }
+    else if(r < rates.coin60+rates.coin150){ rewardCoin=150; rarityName="✨ レア"; }
+    else if(r < rates.coin60+rates.coin150+rates.coin300){ rewardCoin=300; rarityName="🌟 超レア"; }
+    else if(r < rates.coin60+rates.coin150+rates.coin300+rates.coin500){ rewardCoin=500; rarityName="⚡ ウルトラレア"; }
+    else {
+      showSpecialFound();
+      return;
+    }
+    coins += rewardCoin;
+    msg.textContent=`🧰 宝箱開封！ [${rarityName}] ${rewardCoin} G 獲得！`;
+  };
+
+  const originalNextStage = nextStage;
+  nextStage = function(){
+    const result=originalNextStage.apply(this,arguments);
+    setTimeout(()=>applySpecialEnemyHp(),20);
+    return result;
+  };
+
+  const originalProceed = proceedToNextStageNumber;
+  proceedToNextStageNumber = function(){
+    const result=originalProceed.apply(this,arguments);
+    applySpecialEnemyHp();
+    return result;
+  };
+
+  const originalChangeStage = window.changeStage;
+  if(typeof originalChangeStage==="function"){
+    window.changeStage=function(){
+      const result=originalChangeStage.apply(this,arguments);
+      applySpecialEnemyHp();
+      return result;
+    };
+  }
+
+  const originalResetGame=resetGame;
+  resetGame=function(){
+    specialCodes.hp20=false;
+    specialCodes.luckyBoost=false;
+    specialCodes.specialFound=false;
+    specialCodes.specialActive=false;
+    if(p && p.__hp20Applied){
+      p.max=Math.max(0,p.max-20);
+      p.__hp20Applied=false;
+    }
+    if(enemy) enemy.__specialHpApplied=false;
+    window.itemRates={...normalItems};
+    const result=originalResetGame.apply(this,arguments);
+    window.itemRates={...normalItems};
+    updateCodeUI();
+    const input=document.getElementById("publicSpecialCodeInput");
+    if(input) input.value="";
+    return result;
+  };
+
+  const oldGoDraw=goDraw;
+  goDraw=function(){
+    const result=oldGoDraw.apply(this,arguments);
+    addCodeUI();
+    return result;
+  };
+
+  addCodeUI();
+})();
+</script>
+</body>
+</html>
