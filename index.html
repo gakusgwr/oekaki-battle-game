@@ -509,34 +509,38 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
-
-
-/* Mobile-only special code placement */
+/* Mobile-only special code placement: keep it inside the drawing screen without blocking controls */
 @media (max-width: 900px) {
   body.mobile-mode #publicSpecialCodeUI {
-    position: fixed !important;
+    position: absolute !important;
     right: 8px !important;
     bottom: 8px !important;
-    width: min(300px, 42vw) !important;
-    max-width: 42vw !important;
+    width: min(300px, 36vw) !important;
+    max-width: 36vw !important;
     margin: 0 !important;
-    padding: 8px !important;
     z-index: 3000 !important;
-    box-sizing: border-box !important;
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   body.mobile-mode #publicSpecialCodeUI input {
-    width: min(180px, 24vw) !important;
+    width: min(180px, 22vw) !important;
     font-size: 16px !important;
+    pointer-events: auto !important;
+    touch-action: auto !important;
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
   body.mobile-mode #publicSpecialCodeUI button {
-    padding: 6px 10px !important;
-    margin: 2px !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
 }
 @media (max-width: 600px) and (orientation: portrait) {
   body.mobile-mode #publicSpecialCodeUI {
-    right: 6px !important;
     left: 6px !important;
+    right: 6px !important;
     bottom: 6px !important;
     width: auto !important;
     max-width: none !important;
@@ -934,7 +938,8 @@ document.getElementById("keySaveBtn").onclick = () => {
 };
 document.getElementById("addSpace").onclick = () => { if (!window.attackExtraKeys.includes(" ")) window.attackExtraKeys.push(" "); renderKeyRows(); };
 document.getElementById("addMouse").onclick = () => { if (!window.attackExtraKeys.includes("mouseleft")) window.attackExtraKeys.push("mouseleft"); renderKeyRows(); };
-document.getElementById("addCustom").onclick = () => { const k = prompt("追加するキーを入力してください"); if (k && !window.attackExtraKeys.includes(k.toLowerCase())) window.attackExtraKeys.push(k.toLowerCase()); renderKeyRows(); };let pts = [];
+document.getElementById("addCustom").onclick = () => { const k = prompt("追加するキーを入力してください"); if (k && !window.attackExtraKeys.includes(k.toLowerCase())) window.attackExtraKeys.push(k.toLowerCase()); renderKeyRows(); };
+let pts = [];
 const dc = document.getElementById("drawCanvas");
 const dctx = dc.getContext("2d");
 let drawing = false, locked = false;
@@ -1830,7 +1835,8 @@ function update() {
     shieldRemainingTime = Math.max(0, shieldRemainingTime - dt);
     if (shieldRemainingTime <= 0) shieldActive = false;
   } else {
-    shieldActive = false;  }
+    shieldActive = false;
+  }
   // Key Handler for Treasure Chest Opening
   const chestKey = window.controlKeys.chest;
   if (keys[chestKey] && !treasureChest.opened && Math.hypot(p.x - treasureChest.x, p.y - treasureChest.y) < 50) {
