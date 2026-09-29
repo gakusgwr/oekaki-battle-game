@@ -18,6 +18,23 @@ button:disabled { opacity: 0.5; cursor: not-allowed; background: #222; }
 #gearBtn { position: absolute; right: 8px; top: 8px; font-size: 24px; padding: 6px; }
 #hushBtn { position: fixed; right: 54px; top: 8px; font-size: 24px; padding: 6px; z-index: 310; }
 #keySetting, #keyConfirm, #specialCodeBox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100; color: #fff; padding: 24px; text-align: center; overflow-y: auto; }
+#specialCodeBox input,
+body.mobile-mode #publicSpecialCodeUI input {
+  position: relative;
+  z-index: 1002;
+  pointer-events: auto !important;
+  touch-action: auto !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -webkit-touch-callout: default !important;
+  font-size: 18px !important;
+}
+body.mobile-mode #publicSpecialCodeUI,
+body.mobile-mode #publicSpecialCodeUI button {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+
 .keyRow { margin: 12px; }
 input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
 .weapon-select-box {
@@ -778,19 +795,25 @@ const drawDiv = document.getElementById("draw");
 const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
 let deviceMode = 'pc';
-async function chooseDevice(mode) {
+function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
-  // スマホ版を選んだときは、対応ブラウザなら横向きを自動要求する。
-  if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
-    try {
-      await screen.orientation.lock('landscape');
-    } catch (e) {
-      // ブラウザの仕様でロックできない場合は、CSSの縦向き案内を表示する。
-    }
-  }
   goDraw();
+}
+
+async function requestMobileLandscape() {
+  if (deviceMode !== 'mobile') return;
+  try {
+    if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+      await document.documentElement.requestFullscreen();
+    }
+  } catch (e) {}
+  try {
+    if (screen.orientation && screen.orientation.lock) {
+      await screen.orientation.lock('landscape');
+    }
+  } catch (e) {}
 }
 function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
 window.controlKeys = { attack: "e", chest: "f", shield: "g", up: "w", down: "s", left: "a", right: "d" };
@@ -897,8 +920,7 @@ function getStarPoints(cx, cy, spikes, outerRadius, innerRadius) {
   }
   return points;
 }
-const starPoints = getStarPoints(200, 200, 5, 100, 45);
-const swordPoints = [
+const starPoints = getStarPoints(200, 200, 5, 100, 45);const swordPoints = [
   {x: 200, y: 50}, {x: 220, y: 80}, {x: 220, y: 260},
   {x: 270, y: 260}, {x: 270, y: 280}, {x: 220, y: 280},
   {x: 220, y: 350}, {x: 180, y: 350}, {x: 180, y: 280},
@@ -1056,7 +1078,10 @@ function judge() {
   }
   document.getElementById("battleBtn").classList.remove("hidden");
 }
-function startCountdown() {
+async function startCountdown() {
+  if (deviceMode === 'mobile') {
+    await requestMobileLandscape();
+  }
   drawDiv.classList.add("hidden");
   document.getElementById("count").classList.remove("hidden");
   let n = 3;
@@ -1797,8 +1822,7 @@ function update() {
   } else if (stage === 4 && enemy.hp > 0 && !admin.enemyStopped) {
     enemy.spawnTimer--;
     if (enemy.spawnTimer <= 0) {
-      if (minions.length < 5) {
-        minions.push({ x: enemy.x, y: enemy.y, hp: 33, maxHp: 33, atk: 10, r: 18, type: "normal", shootTimer: 80 });
+      if (minions.length < 5) {        minions.push({ x: enemy.x, y: enemy.y, hp: 33, maxHp: 33, atk: 10, r: 18, type: "normal", shootTimer: 80 });
       }
       enemy.spawnTimer = 500;
     }
@@ -2631,7 +2655,13 @@ loop();
       '</div>' +
       '<p id="publicSpecialCodeMsg" style="margin-top:5px;color:#ffd700;font-size:13px"></p>';
     drawDiv.appendChild(box);
-    document.getElementById("publicSpecialCodeBtn").onclick=()=>{
+    const publicInput = document.getElementById("publicSpecialCodeInput");
+    const publicButton = document.getElementById("publicSpecialCodeBtn");
+    publicInput.addEventListener("pointerdown", e => e.stopPropagation(), {passive:false});
+    publicInput.addEventListener("pointerup", e => e.stopPropagation(), {passive:false});
+    publicButton.addEventListener("pointerdown", e => e.stopPropagation(), {passive:false});
+    publicButton.addEventListener("pointerup", e => e.stopPropagation(), {passive:false});
+    publicButton.onclick=()=>{
       const input=document.getElementById("publicSpecialCodeInput");
       const value=input.value;
       if(useSpecialCode(value)){
@@ -2698,67 +2728,3 @@ loop();
     if(r < rates.coin60){ rewardCoin=60; rarityName="📦 通常"; }
     else if(r < rates.coin60+rates.coin150){ rewardCoin=150; rarityName="✨ レア"; }
     else if(r < rates.coin60+rates.coin150+rates.coin300){ rewardCoin=300; rarityName="🌟 超レア"; }
-    else if(r < rates.coin60+rates.coin150+rates.coin300+rates.coin500){ rewardCoin=500; rarityName="⚡ ウルトラレア"; }
-    else {
-      showSpecialFound();
-      return;
-    }
-    coins += rewardCoin;
-    msg.textContent=`🧰 宝箱開封！ [${rarityName}] ${rewardCoin} G 獲得！`;
-  };
-
-  const originalNextStage = nextStage;
-  nextStage = function(){
-    const result=originalNextStage.apply(this,arguments);
-    setTimeout(()=>applySpecialEnemyHp(),20);
-    return result;
-  };
-
-  const originalProceed = proceedToNextStageNumber;
-  proceedToNextStageNumber = function(){
-    const result=originalProceed.apply(this,arguments);
-    applySpecialEnemyHp();
-    return result;
-  };
-
-  const originalChangeStage = window.changeStage;
-  if(typeof originalChangeStage==="function"){
-    window.changeStage=function(){
-      const result=originalChangeStage.apply(this,arguments);
-      applySpecialEnemyHp();
-      return result;
-    };
-  }
-
-  const originalResetGame=resetGame;
-  resetGame=function(){
-    specialCodes.hp20=false;
-    specialCodes.luckyBoost=false;
-    specialCodes.specialFound=false;
-    specialCodes.specialActive=false;
-    if(p && p.__hp20Applied){
-      p.max=Math.max(0,p.max-20);
-      p.__hp20Applied=false;
-    }
-    if(enemy) enemy.__specialHpApplied=false;
-    window.itemRates={...normalItems};
-    const result=originalResetGame.apply(this,arguments);
-    window.itemRates={...normalItems};
-    updateCodeUI();
-    const input=document.getElementById("publicSpecialCodeInput");
-    if(input) input.value="";
-    return result;
-  };
-
-  const oldGoDraw=goDraw;
-  goDraw=function(){
-    const result=oldGoDraw.apply(this,arguments);
-    addCodeUI();
-    return result;
-  };
-
-  addCodeUI();
-})();
-</script>
-</body>
-</html>
