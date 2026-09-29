@@ -2546,6 +2546,221 @@ loop();
     if (rikuSpecials.slash > 0) { rikuSpecials.slash--; damageEnemy(120 * (kizuku2Active ? 2.0 : 1)); enemyBullets = enemyBullets.filter(b => !b.enemy); bigSlashAnimTimer = 20; updateRikuUI(); msg.textContent = "⚔️ Riku: スラッシュ！"; }
   };
 })();
+
+<script>
+/* === SPECIAL CODES / LUCKY BOOST === */
+(function initSpecialCodesFeature(){
+  window.specialCodes = window.specialCodes || {
+    hp20:false,
+    luckyBoost:false,
+    specialFound:false,
+    specialActive:false
+  };
+
+  const normalItems = {"❤":59.1,"💪":24.3,"🛡️":10,"👻":4.1,"🔮":1.7,"⚡️":0.7};
+  const luckyItems  = {"❤":54.1,"💪":22.3,"🛡️":11,"👻":6.1,"🔮":3.7,"⚡️":2.8};
+
+  /* 宝箱：通常 68/20/7/3/2。
+     Lucky Boost時は高確率の60Gを減らし、低確率側へ配分。 */
+  const normalChest = {coin60:68, coin150:20, coin300:7, coin500:3, special:2};
+  const luckyChest  = {coin60:58, coin150:22, coin300:10, coin500:8, special:2};
+
+  function applyItemRates(){
+    window.itemRates = { ...(specialCodes.luckyBoost ? luckyItems : normalItems) };
+    if (typeof spawnBox === "function") spawnBox();
+  }
+
+  function applyHp20(){
+    if (!specialCodes.hp20) return;
+    /* 現在のゲームの基礎最大HPに+20。効果は重複しない。 */
+    if (!p.__hp20Applied) {
+      p.max += 20;
+      p.hp = Math.min(p.max, p.hp + 20);
+      p.__hp20Applied = true;
+    }
+  }
+
+  function applySpecialEnemyHp(){
+    if (!specialCodes.specialActive) return;
+    if (typeof enemy !== "undefined" && !enemy.__specialHpApplied) {
+      enemy.maxHp *= 0.9;
+      enemy.hp = Math.min(enemy.hp * 0.9, enemy.maxHp);
+      enemy.__specialHpApplied = true;
+    }
+  }
+
+  function useSpecialCode(code){
+    const c = String(code || "").trim().toLowerCase();
+    if (c === "hp20") {
+      specialCodes.hp20 = true;
+      applyHp20();
+      msg.textContent = "❤️ HP20 発動！最大HP +20";
+      return true;
+    }
+    if (c === "lucky boost") {
+      specialCodes.luckyBoost = true;
+      applyItemRates();
+      msg.textContent = "🍀 Lucky Boost 発動！全ステージでレア報酬UP！";
+      return true;
+    }
+    if (c === "special code") {
+      if (!specialCodes.specialFound) {
+        msg.textContent = "🔒 Special Codeは宝箱から入手すると使用できます。";
+        return false;
+      }
+      specialCodes.specialActive = true;
+      applySpecialEnemyHp();
+      msg.textContent = "🔐 Special Code 発動！敵の攻撃力・HPを弱体化！";
+      return true;
+    }
+    return false;
+  }
+
+  function addCodeUI(){
+    if (document.getElementById("publicSpecialCodeUI")) return;
+    const box=document.createElement("div");
+    box.id="publicSpecialCodeUI";
+    box.style.cssText="margin:8px auto;padding:10px;background:#292929;border:2px solid #ffd700;border-radius:8px;max-width:520px;text-align:left;";
+    box.innerHTML =
+      '<b>🔑 特殊コード</b><br>' +
+      '<span>HP20 → 最大HP +20</span><br>' +
+      '<span>Lucky Boost → 📦ボックス・🧰宝箱のレア確率UP</span><br>' +
+      '<span id="specialCodeDiscovered" style="display:none">Special Code → 敵の攻撃力・HP低下</span>' +
+      '<div style="margin-top:7px">' +
+      '<input id="publicSpecialCodeInput" type="password" autocomplete="off" placeholder="コードを入力" style="font-size:16px;padding:5px;width:210px">' +
+      '<button id="publicSpecialCodeBtn" type="button">入力</button>' +
+      '</div>' +
+      '<p id="publicSpecialCodeMsg" style="margin-top:5px;color:#ffd700;font-size:13px"></p>';
+    drawDiv.appendChild(box);
+    document.getElementById("publicSpecialCodeBtn").onclick=()=>{
+      const input=document.getElementById("publicSpecialCodeInput");
+      const value=input.value;
+      if(useSpecialCode(value)){
+        input.value="";
+      }else{
+        document.getElementById("publicSpecialCodeMsg").textContent="❌ 使用できないコードです";
+      }
+      updateCodeUI();
+    };
+    document.getElementById("publicSpecialCodeInput").addEventListener("keydown",e=>{
+      if(e.key==="Enter") document.getElementById("publicSpecialCodeBtn").click();
+    });
+    updateCodeUI();
+  }
+
+  function updateCodeUI(){
+    const found=document.getElementById("specialCodeDiscovered");
+    if(found) found.style.display=specialCodes.specialFound ? "inline" : "none";
+  }
+
+  function showSpecialFound(){
+    specialCodes.specialFound=true;
+    updateCodeUI();
+    isPausedForSpecial=true;
+    let modal=document.getElementById("specialCodeFoundModal");
+    if(!modal){
+      modal=document.createElement("div");
+      modal.id="specialCodeFoundModal";
+      modal.style.cssText="position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:9999;display:flex;align-items:center;justify-content:center;";
+      modal.innerHTML='<div style="background:#222;border:3px solid #ffd700;border-radius:12px;padding:28px;max-width:90vw;text-align:center;color:white"><h2>📸 スクショタイム！</h2><p style="font-size:20px;margin:15px 0">Special Codeを発見！</p><div style="font-size:26px;font-weight:bold;color:#ffd700;margin:15px 0">Special Code</div><p>この試合中、お絵描き画面から使用できます。</p><button id="specialCodeFoundOk" style="font-size:18px;padding:10px 25px">OK</button></div>';
+      document.body.appendChild(modal);
+      document.getElementById("specialCodeFoundOk").onclick=()=>{
+        modal.style.display="none";
+        isPausedForSpecial=false;
+        msg.textContent="🔐 Special Codeを入手しました！";
+      };
+    }else{
+      modal.style.display="flex";
+    }
+  }
+
+  const originalUpdate = update;
+  update = function(){
+    if(isPausedForSpecial) return;
+    return originalUpdate.apply(this,arguments);
+  };
+
+  const originalDamagePlayer = damagePlayer;
+  damagePlayer = function(dmg){
+    if(specialCodes.specialActive) dmg *= 0.95;
+    return originalDamagePlayer.call(this,dmg);
+  };
+
+  const originalWeightedItem = weightedItem;
+  weightedItem = function(){
+    return originalWeightedItem();
+  };
+
+  const originalChestReward = openTreasureChestReward;
+  openTreasureChestReward = function(){
+    const rates=specialCodes.luckyBoost ? luckyChest : normalChest;
+    const r=Math.random()*100;
+    let rewardCoin=60, rarityName="📦 通常";
+    if(r < rates.coin60){ rewardCoin=60; rarityName="📦 通常"; }
+    else if(r < rates.coin60+rates.coin150){ rewardCoin=150; rarityName="✨ レア"; }
+    else if(r < rates.coin60+rates.coin150+rates.coin300){ rewardCoin=300; rarityName="🌟 超レア"; }
+    else if(r < rates.coin60+rates.coin150+rates.coin300+rates.coin500){ rewardCoin=500; rarityName="⚡ ウルトラレア"; }
+    else {
+      showSpecialFound();
+      return;
+    }
+    coins += rewardCoin;
+    msg.textContent=`🧰 宝箱開封！ [${rarityName}] ${rewardCoin} G 獲得！`;
+  };
+
+  const originalNextStage = nextStage;
+  nextStage = function(){
+    const result=originalNextStage.apply(this,arguments);
+    setTimeout(()=>applySpecialEnemyHp(),20);
+    return result;
+  };
+
+  const originalProceed = proceedToNextStageNumber;
+  proceedToNextStageNumber = function(){
+    const result=originalProceed.apply(this,arguments);
+    applySpecialEnemyHp();
+    return result;
+  };
+
+  const originalChangeStage = window.changeStage;
+  if(typeof originalChangeStage==="function"){
+    window.changeStage=function(){
+      const result=originalChangeStage.apply(this,arguments);
+      applySpecialEnemyHp();
+      return result;
+    };
+  }
+
+  const originalResetGame=resetGame;
+  resetGame=function(){
+    specialCodes.hp20=false;
+    specialCodes.luckyBoost=false;
+    specialCodes.specialFound=false;
+    specialCodes.specialActive=false;
+    if(p && p.__hp20Applied){
+      p.max=Math.max(0,p.max-20);
+      p.__hp20Applied=false;
+    }
+    if(enemy) enemy.__specialHpApplied=false;
+    window.itemRates={...normalItems};
+    const result=originalResetGame.apply(this,arguments);
+    window.itemRates={...normalItems};
+    updateCodeUI();
+    const input=document.getElementById("publicSpecialCodeInput");
+    if(input) input.value="";
+    return result;
+  };
+
+  const oldGoDraw=goDraw;
+  goDraw=function(){
+    const result=oldGoDraw.apply(this,arguments);
+    addCodeUI();
+    return result;
+  };
+
+  addCodeUI();
+})();
+</script>
 </script>
 </body>
 </html>
