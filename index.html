@@ -571,39 +571,6 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
-
-/* Mobile special-code input: keep it tappable and out of the way */
-@media (max-width: 900px) {
-  body.mobile-mode #publicSpecialCodeUI {
-    position: fixed !important;
-    right: 8px !important;
-    bottom: 8px !important;
-    z-index: 3000 !important;
-    pointer-events: auto !important;
-    touch-action: auto !important;
-    box-sizing: border-box !important;
-    max-width: min(320px, 45vw) !important;
-  }
-  body.mobile-mode #publicSpecialCodeUI input {
-    pointer-events: auto !important;
-    touch-action: auto !important;
-    user-select: text !important;
-    -webkit-user-select: text !important;
-    font-size: 16px !important;
-  }
-  body.mobile-mode #publicSpecialCodeUI button {
-    pointer-events: auto !important;
-    touch-action: manipulation !important;
-  }
-}
-@media (max-width: 600px) and (orientation: portrait) {
-  body.mobile-mode #publicSpecialCodeUI {
-    left: 6px !important;
-    right: 6px !important;
-    bottom: 6px !important;
-    max-width: none !important;
-  }
-}
 </style>
 </head>
 <body>
@@ -815,6 +782,14 @@ async function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
+  // スマホ版を選んだときは、対応ブラウザなら横向きを自動要求する。
+  if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
+    try {
+      await screen.orientation.lock('landscape');
+    } catch (e) {
+      // ブラウザの仕様でロックできない場合は、CSSの縦向き案内を表示する。
+    }
+  }
   goDraw();
 }
 function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
