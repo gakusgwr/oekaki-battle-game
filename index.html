@@ -2202,6 +2202,169 @@ body.mobile-mode #draw:not(.hidden) > br {
   }
 }
 
+
+/* FINAL REQUEST FIX V7
+   Mobile landscape drawing: weapon selection above canvas.
+   Mobile battle: fit the entire 900x500 map in the visible screen. */
+@media (orientation:landscape) {
+  body.mobile-mode #draw:not(.hidden) {
+    grid-template-columns:minmax(230px,38vw) minmax(260px,1fr) !important;
+    grid-template-rows:22px 38px minmax(0,1fr) 42px 42px !important;
+    align-content:start !important;
+    padding:2px 8px !important;
+    gap:2px 12px !important;
+  }
+
+  /* 武器選択（ガイド付き）をキャンバスの真上へ */
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box {
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    height:38px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box p {
+    display:block !important;
+    height:11px !important;
+    margin:0 !important;
+    font-size:7px !important;
+    line-height:11px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box button {
+    min-width:45px !important;
+    height:20px !important;
+    margin:1px !important;
+    padding:1px 3px !important;
+    font-size:7px !important;
+    line-height:18px !important;
+  }
+
+  /* ガイド本文もキャンバス直上に固定 */
+  body.mobile-mode #draw:not(.hidden) #guideInstruction {
+    display:none !important;
+  }
+
+  /* キャンバスを武器選択の直下 */
+  body.mobile-mode #draw:not(.hidden) #drawCanvas {
+    grid-column:1 !important;
+    grid-row:3 / 6 !important;
+    width:min(31vh,33vw) !important;
+    height:min(31vh,33vw) !important;
+    max-width:33vw !important;
+    max-height:31vh !important;
+    margin:0 auto !important;
+    align-self:start !important;
+  }
+
+  /* 右側中央に操作ボタンを独立配置 */
+  body.mobile-mode #draw:not(.hidden) #judgeBtn {
+    grid-column:2 !important;
+    grid-row:3 !important;
+    align-self:center !important;
+    margin:0 !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #clearBtn {
+    grid-column:2 !important;
+    grid-row:4 !important;
+    align-self:center !important;
+    margin:0 !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #battleBtn:not(.hidden) {
+    grid-column:2 !important;
+    grid-row:5 !important;
+    align-self:center !important;
+    margin:0 !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #battleBtn.hidden {
+    display:none !important;
+  }
+}
+
+/* スマホ横向きの戦闘画面：900x500マップ全体を必ず画面内に収める */
+@media (max-width:900px) and (orientation:landscape) {
+  body.mobile-mode #gameArea {
+    width:100vw !important;
+    height:100vh !important;
+    min-height:100vh !important;
+    box-sizing:border-box !important;
+    padding:2px 2px 70px !important;
+    margin:0 !important;
+    gap:0 !important;
+    justify-content:flex-start !important;
+    overflow:hidden !important;
+  }
+
+  body.mobile-mode #gameArea h2 {
+    margin:0 !important;
+    height:18px !important;
+    line-height:18px !important;
+    font-size:13px !important;
+  }
+
+  body.mobile-mode #gameArea > div:not(#chargeContainer):not(#msg) {
+    margin:0 !important;
+    height:14px !important;
+    line-height:14px !important;
+    font-size:8px !important;
+    white-space:nowrap !important;
+  }
+
+  body.mobile-mode #gameArea #chargeContainer {
+    height:14px !important;
+    margin:0 !important;
+    font-size:8px !important;
+    line-height:14px !important;
+  }
+
+  body.mobile-mode #gameArea #charge {
+    width:90px !important;
+    height:8px !important;
+    vertical-align:middle !important;
+  }
+
+  body.mobile-mode #gameArea #msg {
+    height:0 !important;
+    margin:0 !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    overflow:visible !important;
+  }
+
+  body.mobile-mode #gameArea #game {
+    display:block !important;
+    width:min(calc(100vw - 4px), calc((100vh - 52px) * 1.8)) !important;
+    height:auto !important;
+    max-width:calc(100vw - 4px) !important;
+    max-height:calc(100vh - 52px) !important;
+    aspect-ratio:900 / 500 !important;
+    object-fit:contain !important;
+    margin:0 auto !important;
+    flex:none !important;
+  }
+
+  body.mobile-mode #gameArea #guideText {
+    position:fixed !important;
+    left:50% !important;
+    bottom:60px !important;
+    transform:translateX(-50%) !important;
+    width:90vw !important;
+    margin:0 !important;
+    font-size:8px !important;
+    line-height:1 !important;
+    text-align:center !important;
+    z-index:155 !important;
+    pointer-events:none !important;
+  }
+}
+
 </style>
 </head>
 <body>
