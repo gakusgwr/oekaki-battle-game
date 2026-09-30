@@ -2424,11 +2424,12 @@ loop();
     if (code === "hp20" || code === "lucky boost" || code === "ryokutya" || code === "special code") {
       if (typeof window.useSpecialCode === "function" && window.useSpecialCode(code)) {
         codeInput.value = "";
-        codeMsg.textContent = "";
+        codeMsg.textContent = "✅ コードが承認されました！";
         codeBox.classList.add("hidden");
+        msg.textContent = "✅ コードが承認されました！";
         return;
       }
-      codeMsg.textContent = "❌ このコードは現在使用できません";
+      codeMsg.textContent = "❌ コードが違います";
       return;
     }
 
