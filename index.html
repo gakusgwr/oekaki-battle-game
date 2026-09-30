@@ -1006,6 +1006,13 @@ body.mobile-mode #draw #battleBtn:not(.hidden) {
   }
 }
 
+
+/* FINAL SCREEN VISIBILITY OVERRIDE - must be outside all comments */
+body.mobile-mode #draw.hidden,
+body.mobile-mode #count.hidden,
+body.mobile-mode #gameArea.hidden {
+  display: none !important;
+}
 </style>
 </head>
 <body>
@@ -1349,8 +1356,16 @@ document.getElementById("gearBtn").onclick = openKeySettings;
   };
   bind("judgeBtn", judge);
   bind("clearBtn", clearCanvas);
-  bind("battleBtn", startCountdown);
 })();
+const battleStartButton = document.getElementById("battleBtn");
+if (battleStartButton) {
+  battleStartButton.onclick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    startCountdown();
+  };
+  battleStartButton.style.touchAction = "manipulation";
+}
 document.getElementById("keyCheckBtn").onclick = () => {
   document.getElementById("keySummary").innerHTML = Object.keys(keyLabels).map(a => `<p>${keyLabels[a]} → <b>${keyText(window.controlKeys[a])}</b></p>`).join("");
   document.getElementById("keySetting").classList.add("hidden");
