@@ -1299,7 +1299,8 @@ function weightedItem() {
 }
 function spawnBox() {
   boxes = [];
-  const count = Math.max(1, Math.min(10, Math.floor(Number(window.adminBoxCount) || 2)));
+  const ryokutyaActive = !!(window.specialCodes && window.specialCodes.ryokutya);
+  const count = ryokutyaActive ? 4 : Math.max(1, Math.min(10, Math.floor(Number(window.adminBoxCount) || 2)));
   for (let i = 0; i < count; i++) {
     boxes.push({
       x: 100 + Math.random() * 700,
@@ -2347,20 +2348,6 @@ loop();
       openAdminPanel();
       codeInput.value = "";
       msg.textContent = "👑 管理者パネルを解放しました！";
-    } else if (code === "kizuku2") {
-      kizuku2Active = true;
-      document.getElementById("kizukuPanel").classList.remove("hidden");
-      codeBox.classList.add("hidden");
-      codeInput.value = "";
-      updateKizukuUI();
-      msg.textContent = "⚡ KIZUKU2 パネルを解放しました！";
-    } else if (code === "riku") {
-      rikuActive = true;
-      document.getElementById("rikuPanel").classList.remove("hidden");
-      codeBox.classList.add("hidden");
-      codeInput.value = "";
-      updateRikuUI();
-      msg.textContent = "⚡ RIKU パネルを解放しました！（クリア時必殺技+1追加）";
     } else {
       codeMsg.textContent = "❌ コードが違います";
     }
@@ -2552,6 +2539,7 @@ loop();
   window.specialCodes = window.specialCodes || {
     hp20:false,
     luckyBoost:false,
+    ryokutya:false,
     specialFound:false,
     specialActive:false
   };
@@ -2602,6 +2590,12 @@ loop();
       msg.textContent = "🍀 Lucky Boost 発動！全ステージでレア報酬UP！";
       return true;
     }
+    if (c === "ryokutya") {
+      specialCodes.ryokutya = true;
+      if (typeof spawnBox === "function") spawnBox();
+      msg.textContent = "🍵 ryokutya 発動！全ステージのボックスが4個になります！";
+      return true;
+    }
     if (c === "special code") {
       if (!specialCodes.specialFound) {
         msg.textContent = "🔒 Special Codeは宝箱から入手すると使用できます。";
@@ -2624,6 +2618,7 @@ loop();
       '<b>🔑 特殊コード</b><br>' +
       '<span>HP20 → 最大HP +20</span><br>' +
       '<span>Lucky Boost → 📦ボックス・🧰宝箱のレア確率UP</span><br>' +
+      '<span>ryokutya → 📦ボックスが全ステージ4個</span><br>' +
       '<span id="specialCodeDiscovered" style="display:none">Special Code → 敵の攻撃力・HP低下</span>' +
       '<div style="margin-top:7px">' +
       '<input id="publicSpecialCodeInput" type="password" autocomplete="off" placeholder="コードを入力" style="font-size:16px;padding:5px;width:210px">' +
@@ -2734,6 +2729,7 @@ loop();
   resetGame=function(){
     specialCodes.hp20=false;
     specialCodes.luckyBoost=false;
+    specialCodes.ryokutya=false;
     specialCodes.specialFound=false;
     specialCodes.specialActive=false;
     if(p && p.__hp20Applied){
