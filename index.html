@@ -660,19 +660,21 @@ body.mobile-mode #mobileControls { z-index:160; }
 
 
 <style id="mobile-centered-drawing-fix">
-/* CENTERED MOBILE LANDSCAPE DRAWING UI - FINAL */
+/* CLEAN FINAL MOBILE LANDSCAPE DRAWING LAYOUT */
 @media (max-width: 900px) and (orientation: landscape) {
   body.mobile-mode #draw {
     display: grid !important;
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     grid-template-rows: auto auto auto auto auto auto auto auto !important;
     width: 100vw !important;
     height: 100vh !important;
     max-height: 100vh !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    box-sizing: border-box !important;
     align-items: center !important;
     justify-items: center !important;
+    align-content: start !important;
     text-align: center !important;
     padding: 4px 8px !important;
     gap: 2px !important;
@@ -682,50 +684,63 @@ body.mobile-mode #mobileControls { z-index:160; }
     grid-column: 1 !important;
     grid-row: 1 !important;
     margin: 0 !important;
-    text-align: center !important;
+    font-size: 15px !important;
+    line-height: 1.1 !important;
   }
 
   body.mobile-mode #draw #guideInstruction {
     grid-column: 1 !important;
     grid-row: 2 !important;
     margin: 0 !important;
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
     text-align: center !important;
   }
 
   body.mobile-mode #draw #drawCanvas {
     grid-column: 1 !important;
     grid-row: 3 !important;
+    display: block !important;
     width: min(34vh, 42vw) !important;
     height: min(34vh, 42vw) !important;
     max-width: 80vw !important;
-    max-height: 45vh !important;
+    max-height: 42vh !important;
     margin: 0 auto !important;
     justify-self: center !important;
     align-self: center !important;
   }
 
+  /* 武器選択：画面中央 */
   body.mobile-mode #draw .weapon-select-box {
     grid-column: 1 !important;
     grid-row: 4 !important;
-    width: min(330px, 70vw) !important;
-    max-width: 70vw !important;
+    display: block !important;
+    width: min(560px, 88vw) !important;
+    max-width: 88vw !important;
     margin: 0 auto !important;
-    padding: 4px !important;
+    padding: 4px 6px !important;
     justify-self: center !important;
     text-align: center !important;
+    box-sizing: border-box !important;
   }
 
   body.mobile-mode #draw .weapon-select-box p {
     margin: 0 0 2px !important;
+    font-size: 9px !important;
     text-align: center !important;
   }
 
   body.mobile-mode #draw .weapon-select-box button {
     display: inline-block !important;
     width: auto !important;
-    min-width: 70px !important;
+    min-width: 82px !important;
     margin: 2px !important;
     padding: 4px 7px !important;
+    font-size: 10px !important;
+    line-height: 1.05 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
   }
 
   body.mobile-mode #draw #judgeBtn {
@@ -739,17 +754,23 @@ body.mobile-mode #mobileControls { z-index:160; }
     z-index: 3000 !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
   }
 
   body.mobile-mode #draw #clearBtn {
     grid-column: 1 !important;
     grid-row: 6 !important;
     display: inline-block !important;
+    position: relative !important;
+    left: auto !important;
     margin: 2px auto !important;
     justify-self: center !important;
     z-index: 3000 !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
+    font-size: 10px !important;
+    padding: 4px 8px !important;
   }
 
   body.mobile-mode #draw #result {
@@ -757,10 +778,13 @@ body.mobile-mode #mobileControls { z-index:160; }
     grid-row: 7 !important;
     margin: 2px auto !important;
     max-width: 90vw !important;
-    text-align: center !important;
     overflow: visible !important;
+    text-align: center !important;
+    font-size: 11px !important;
+    line-height: 1.05 !important;
   }
 
+  /* 戦闘開始：画面中央 */
   body.mobile-mode #draw #battleBtn {
     grid-column: 1 !important;
     grid-row: 8 !important;
@@ -774,7 +798,7 @@ body.mobile-mode #mobileControls { z-index:160; }
     touch-action: manipulation !important;
     white-space: nowrap !important;
     font-size: 14px !important;
-    padding: 6px 14px !important;
+    padding: 6px 16px !important;
   }
 
   body.mobile-mode #draw #gearBtn {
@@ -800,26 +824,24 @@ body.mobile-mode #mobileControls { z-index:160; }
   body.mobile-mode #draw #drawCanvas {
     width: min(29vh, 38vw) !important;
     height: min(29vh, 38vw) !important;
-    max-height: 35vh !important;
+    max-height: 34vh !important;
   }
   body.mobile-mode #draw .weapon-select-box {
-    width: min(300px, 62vw) !important;
-    max-width: 62vw !important;
+    width: min(560px, 92vw) !important;
+    max-width: 92vw !important;
   }
   body.mobile-mode #draw .weapon-select-box button {
     font-size: 9px !important;
     padding: 2px 5px !important;
-    margin: 1px !important;
+    min-width: 70px !important;
   }
   body.mobile-mode #draw #judgeBtn,
   body.mobile-mode #draw #clearBtn,
   body.mobile-mode #draw #battleBtn {
     font-size: 10px !important;
     padding: 3px 8px !important;
-    margin: 1px auto !important;
   }
 }
-</style>
 </style>
 </head>
 <body>
@@ -1043,13 +1065,42 @@ const drawDiv = document.getElementById("draw");
 const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
 let deviceMode = 'pc';
+let currentScreen = 'title';
+
+// 画面を1つだけ表示する共通処理。
+// 「回転したら描画画面に戻る」「ゲーム中なのに描画画面が出る」を防ぐ。
+function syncScreenVisibility() {
+  const screens = {
+    title: document.getElementById("title"),
+    draw: document.getElementById("draw"),
+    countdown: document.getElementById("count"),
+    game: document.getElementById("gameArea")
+  };
+  Object.entries(screens).forEach(([name, el]) => {
+    if (!el) return;
+    el.classList.toggle("hidden", name !== currentScreen);
+  });
+
+  const mobileControls = document.getElementById("mobileControls");
+  if (mobileControls) {
+    const showControls = deviceMode === "mobile" && currentScreen === "game";
+    mobileControls.style.display = showControls ? "block" : "none";
+    mobileControls.style.pointerEvents = "none";
+  }
+}
+
+function setScreen(screen) {
+  currentScreen = screen;
+  syncScreenVisibility();
+}
+
 function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
-  goDraw();
+  setScreen('draw');
+  redrawCanvas();
 
   // スマホ版は横画面を推奨・可能ならロックする。
-  // ロックできない端末でも、そのままゲームを続けられるようにする。
   if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
     setTimeout(() => {
       screen.orientation.lock('landscape').catch(() => {});
@@ -1057,35 +1108,17 @@ function chooseDevice(mode) {
   }
 }
 
-// 画面回転で「描画画面」に戻ったように見える問題を防ぐ。
-// 回転前にゲーム画面だった場合は、回転後もゲーム画面を維持する。
+// 回転しても「今いる画面」をそのまま維持する。
+// 特にスマホ版は描画→カウントダウン→ゲームの途中で画面が勝手に戻らない。
 window.addEventListener('orientationchange', () => {
   setTimeout(() => {
     if (deviceMode !== 'mobile') return;
-    const gameAreaEl = document.getElementById('gameArea');
-    const drawEl = document.getElementById('draw');
-    const countEl = document.getElementById('count');
-    const mobileControls = document.getElementById('mobileControls');
-
-    if (gameAreaEl && !gameAreaEl.classList.contains('hidden')) {
-      drawEl?.classList.add('hidden');
-      countEl?.classList.add('hidden');
-      gameAreaEl.classList.remove('hidden');
-      if (mobileControls) {
-        mobileControls.style.display = 'block';
-        mobileControls.style.pointerEvents = 'none';
-      }
-    }
+    syncScreenVisibility();
   }, 150);
 });
+
 function goDraw() {
-  title.classList.add("hidden");
-  drawDiv.classList.remove("hidden");
-  const mobileControls = document.getElementById('mobileControls');
-  if (mobileControls) {
-    mobileControls.style.display = 'none';
-    mobileControls.style.pointerEvents = 'none';
-  }
+  setScreen('draw');
   redrawCanvas();
 }
 window.controlKeys = { attack: "e", chest: "f", shield: "g", up: "w", down: "s", left: "a", right: "d" };
@@ -1374,8 +1407,7 @@ function judge() {
   document.getElementById("battleBtn").classList.remove("hidden");
 }
 function startCountdown() {
-  drawDiv.classList.add("hidden");
-  document.getElementById("count").classList.remove("hidden");
+  setScreen("countdown");
   let n = 3;
   const countText = document.getElementById("countText");
   countText.textContent = "3";
@@ -1397,9 +1429,7 @@ function startCountdown() {
     else if (n === 0) countText.textContent = "GO!";
     else {
       clearInterval(t);
-      document.getElementById("count").classList.add("hidden");
-      gameArea.classList.remove("hidden");
-      document.getElementById('mobileControls').style.display = deviceMode === 'mobile' ? 'block' : 'none';
+      setScreen("game");
     }
   }, 1000);
 }
@@ -1736,6 +1766,7 @@ function fireBulletHell() {
   msg.textContent = "🔮 弾幕発射！";
 }
 function resetGame() {
+  currentScreen = "title";
   stage = 1;
   setStageObstacles(1);
   coins = 0;
@@ -1751,6 +1782,10 @@ function resetGame() {
   treasureChest = { x: 450, y: 250, opened: false, progress: 0, maxProgress: 100, r: 20 };
   gameOver = false; stageClear = false;
   // 初期画面へ戻るときはスマホ操作パネルを完全に非表示にする
+  document.getElementById("title").classList.remove("hidden");
+  document.getElementById("draw").classList.add("hidden");
+  document.getElementById("count").classList.add("hidden");
+  document.getElementById("gameArea").classList.add("hidden");
   const mobileControls = document.getElementById("mobileControls");
   if (mobileControls) {
     mobileControls.style.display = "none";
@@ -1781,7 +1816,7 @@ function resetGame() {
   spawnBox();
   document.getElementById("stageLabel").textContent = stageBosses[0].name;
   gameArea.classList.add("hidden");
-  title.classList.remove("hidden");
+  setScreen("title");
   clearCanvas();
 }
 function nextStage() {
