@@ -2342,6 +2342,20 @@ loop();
   document.getElementById("specialCodeBack").onclick = () => codeBox.classList.add("hidden");
   document.getElementById("specialCodeCheck").onclick = () => {
     const code = codeInput.value.trim().toLowerCase();
+
+    // このスペシャルコード入力欄からも ryokutya を使用できるようにする。
+    // HP20 などとは別枠で、ryokutya 固有の処理だけを実行する。
+    if (code === "ryokutya") {
+      window.specialCodes = window.specialCodes || {};
+      window.specialCodes.ryokutya = true;
+      if (typeof spawnBox === "function") spawnBox();
+      codeInput.value = "";
+      codeMsg.textContent = "";
+      codeBox.classList.add("hidden");
+      msg.textContent = "🍵 ryokutya 発動！全ステージのボックスが4個になります！";
+      return;
+    }
+
     if (code === "gaku admin") {
       adminUnlocked = true;
       codeBox.classList.add("hidden");
