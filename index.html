@@ -1004,10 +1004,16 @@ function redrawCanvas() {
     dctx.stroke();
   }
   if (pts.length > 0) {
-    dctx.fillStyle = "#000";
-    pts.forEach(p => {
-      dctx.beginPath(); dctx.arc(p.x, p.y, 3, 0, Math.PI * 2); dctx.fill();
-    });
+    dctx.strokeStyle = "#000";
+    dctx.lineWidth = 6;
+    dctx.lineCap = "round";
+    dctx.lineJoin = "round";
+    dctx.beginPath();
+    dctx.moveTo(pts[0].x, pts[0].y);
+    for (let i = 1; i < pts.length; i++) {
+      dctx.lineTo(pts[i].x, pts[i].y);
+    }
+    dctx.stroke();
   }
 }
 function drawPoint(e) {
@@ -1015,9 +1021,25 @@ function drawPoint(e) {
   const r = dc.getBoundingClientRect();
   const x = (e.clientX - r.left) * (dc.width / r.width);
   const y = (e.clientY - r.top) * (dc.height / r.height);
+  const last = pts[pts.length - 1];
   pts.push({ x, y });
-  dctx.fillStyle = "#000";
-  dctx.beginPath(); dctx.arc(x, y, 3, 0, Math.PI * 2); dctx.fill();
+
+  dctx.strokeStyle = "#000";
+  dctx.lineWidth = 6;
+  dctx.lineCap = "round";
+  dctx.lineJoin = "round";
+
+  if (last) {
+    dctx.beginPath();
+    dctx.moveTo(last.x, last.y);
+    dctx.lineTo(x, y);
+    dctx.stroke();
+  } else {
+    dctx.beginPath();
+    dctx.arc(x, y, 3, 0, Math.PI * 2);
+    dctx.fillStyle = "#000";
+    dctx.fill();
+  }
 }
 dc.addEventListener("pointerdown", e => { if (locked) return; e.preventDefault(); drawing = true; dc.setPointerCapture?.(e.pointerId); drawPoint(e); }, { passive: false });
 dc.addEventListener("pointermove", e => { if (!drawing || locked) return; e.preventDefault(); drawPoint(e); }, { passive: false });
