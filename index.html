@@ -18,6 +18,15 @@ button:disabled { opacity: 0.5; cursor: not-allowed; background: #222; }
 #gearBtn { position: absolute; right: 8px; top: 8px; font-size: 24px; padding: 6px; }
 #hushBtn { position: fixed; right: 54px; top: 8px; font-size: 24px; padding: 6px; z-index: 310; }
 #keySetting, #keyConfirm, #specialCodeBox { position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 100; color: #fff; padding: 24px; text-align: center; overflow-y: auto; }
+.special-code-layout { display:flex; align-items:center; justify-content:center; gap:28px; max-width:760px; margin:30px auto 0; }
+.special-code-input-panel, .public-special-code-panel { background:rgba(255,255,255,.06); border:2px solid #555; border-radius:10px; padding:18px; min-width:280px; }
+.public-special-code-panel { border-color:#ffd700; text-align:left; }
+.public-special-code-panel h3 { color:#ffd700; margin-bottom:12px; text-align:center; }
+.public-special-code-panel p { margin:9px 0; font-size:16px; }
+@media (max-width:700px) {
+  .special-code-layout { flex-direction:column; gap:14px; margin-top:15px; }
+  .special-code-input-panel, .public-special-code-panel { width:min(92vw,420px); min-width:0; }
+}
 .keyRow { margin: 12px; }
 input[type="text"] { font-size: 18px; padding: 6px; border-radius: 4px; border: 1px solid #ccc; }
 .weapon-select-box {
@@ -706,12 +715,24 @@ body.mobile-mode #mobileControls { z-index:160; }
   <button id="keyReturnBtn">↩️ 戻る</button>
 </div>
 <div id="specialCodeBox" class="hidden">
-  <h2 style="margin-bottom: 15px;">🤫 スペシャルコード</h2>
-  <p>コードを入力してください</p>
-  <input id="specialCodeInput" type="password" autocomplete="off" style="margin: 15px 0;"><br>
-  <button id="specialCodeCheck">確認</button>
-  <button id="specialCodeBack">戻る</button>
-  <p id="specialCodeMsg" style="color: #ff6b6b; margin-top: 10px;"></p>
+  <h2 style="margin-bottom: 8px;">🤫 スペシャルコード</h2>
+  <div class="special-code-layout">
+    <div class="special-code-input-panel">
+      <h3>スペシャルコード入力</h3>
+      <p>コードを入力してください</p>
+      <input id="specialCodeInput" type="password" autocomplete="off" style="margin: 15px 0; font-size:18px; padding:6px;">
+      <br>
+      <button id="specialCodeCheck">入力</button>
+      <button id="specialCodeBack">戻る</button>
+      <p id="specialCodeMsg" style="color: #ff6b6b; margin-top: 10px;"></p>
+    </div>
+    <div class="public-special-code-panel">
+      <h3>🔑 公開スペシャルコード</h3>
+      <p>1　HP20</p>
+      <p>2　Lucky Boost</p>
+      <p>3　制作者「宝箱を開けまくれ📦️！！」</p>
+    </div>
+  </div>
 </div>
 <div id="adminPanel" class="hidden">
   <div id="adminHead" style="padding: 7px; font-weight: bold; cursor: pointer; background: #333; display:flex; align-items:center; justify-content:space-between;"><span>👑 ADMIN</span><button id="adminClose" type="button" style="width:auto; margin:0; padding:2px 7px; font-size:12px; text-align:center;">✕ 閉じる</button></div>
@@ -2347,7 +2368,7 @@ loop();
     // HP20 / Lucky Boost / ryokutya / Special Code は
     // それぞれ固有の処理を使い、効果を混ぜない。
     if (code === "hp20" || code === "lucky boost" || code === "ryokutya" || code === "special code") {
-      if (typeof useSpecialCode === "function" && useSpecialCode(code)) {
+      if (typeof window.useSpecialCode === "function" && window.useSpecialCode(code)) {
         codeInput.value = "";
         codeMsg.textContent = "";
         codeBox.classList.add("hidden");
@@ -2592,7 +2613,7 @@ loop();
     }
   }
 
-  function useSpecialCode(code){
+  window.useSpecialCode = function useSpecialCode(code){
     const c = String(code || "").trim().toLowerCase();
     if (c === "hp20") {
       specialCodes.hp20 = true;
