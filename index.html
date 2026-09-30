@@ -2343,16 +2343,17 @@ loop();
   document.getElementById("specialCodeCheck").onclick = () => {
     const code = codeInput.value.trim().toLowerCase();
 
-    // このスペシャルコード入力欄からも ryokutya を使用できるようにする。
-    // HP20 などとは別枠で、ryokutya 固有の処理だけを実行する。
-    if (code === "ryokutya") {
-      window.specialCodes = window.specialCodes || {};
-      window.specialCodes.ryokutya = true;
-      if (typeof spawnBox === "function") spawnBox();
-      codeInput.value = "";
-      codeMsg.textContent = "";
-      codeBox.classList.add("hidden");
-      msg.textContent = "🍵 ryokutya 発動！全ステージのボックスが4個になります！";
+    // すべての一般向けスペシャルコードは、この入力欄に統一。
+    // HP20 / Lucky Boost / ryokutya / Special Code は
+    // それぞれ固有の処理を使い、効果を混ぜない。
+    if (code === "hp20" || code === "lucky boost" || code === "ryokutya" || code === "special code") {
+      if (typeof useSpecialCode === "function" && useSpecialCode(code)) {
+        codeInput.value = "";
+        codeMsg.textContent = "";
+        codeBox.classList.add("hidden");
+        return;
+      }
+      codeMsg.textContent = "❌ このコードは現在使用できません";
       return;
     }
 
@@ -2361,6 +2362,7 @@ loop();
       codeBox.classList.add("hidden");
       openAdminPanel();
       codeInput.value = "";
+      codeMsg.textContent = "";
       msg.textContent = "👑 管理者パネルを解放しました！";
     } else {
       codeMsg.textContent = "❌ コードが違います";
@@ -2761,14 +2763,7 @@ loop();
     return result;
   };
 
-  const oldGoDraw=goDraw;
-  goDraw=function(){
-    const result=oldGoDraw.apply(this,arguments);
-    addCodeUI();
-    return result;
-  };
-
-  addCodeUI();
+  // スペシャルコード入力は上部の「🤫 スペシャルコード」に統一。
 })();
 </script>
 </body>
