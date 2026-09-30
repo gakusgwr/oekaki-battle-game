@@ -501,83 +501,160 @@ body.mobile-mode #mobileControls { z-index:160; }
   }
 }
 
-/* FINAL REQUESTED MOBILE LANDSCAPE DRAWING LAYOUT */
+/* FINAL MOBILE LANDSCAPE LAYOUT FIX */
 @media (max-width: 900px) and (orientation: landscape) {
   body.mobile-mode #draw {
     display: grid !important;
-    grid-template-columns: minmax(260px, 1fr) minmax(180px, 300px) !important;
-    grid-template-rows: auto auto auto auto auto !important;
-    column-gap: 18px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(150px, 30vw) !important;
+    grid-template-rows: auto auto 1fr auto auto !important;
+    column-gap: 10px !important;
+    row-gap: 2px !important;
     align-items: start !important;
     justify-items: start !important;
     text-align: left !important;
-    padding: 8px 10px !important;
-    box-sizing: border-box !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    overflow: hidden !important;
+    padding: 4px 6px !important;
   }
 
-  /* 左：絵を描く */
   body.mobile-mode #draw h2 {
-    grid-column: 1 !important;
+    grid-column: 1 / -1 !important;
     grid-row: 1 !important;
-    margin: 0 0 4px 0 !important;
+    margin: 0 0 1px 4px !important;
+    font-size: 15px !important;
+    line-height: 1.1 !important;
   }
 
   body.mobile-mode #draw #guideInstruction {
-    grid-column: 1 !important;
+    grid-column: 1 / -1 !important;
     grid-row: 2 !important;
-    margin: 0 0 4px 0 !important;
+    margin: 0 0 2px 4px !important;
+    font-size: 9px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
   }
 
+  /* 左：描画キャンバス */
   body.mobile-mode #draw #drawCanvas {
     grid-column: 1 !important;
     grid-row: 3 / span 3 !important;
     display: block !important;
-    margin: 0 !important;
-    width: min(42vh, 44vw) !important;
-    height: min(42vh, 44vw) !important;
-    justify-self: start !important;
-  }
-
-  /* 右：武器のガイド */
-  body.mobile-mode #draw .weapon-select-box {
-    grid-column: 2 !important;
-    grid-row: 1 / span 2 !important;
-    width: 100% !important;
-    max-width: 300px !important;
-    margin: 0 !important;
+    width: min(40vh, 46vw) !important;
+    height: min(40vh, 46vw) !important;
+    max-width: calc(100vw - 180px) !important;
+    max-height: calc(100vh - 60px) !important;
+    margin: 0 0 0 4px !important;
     justify-self: start !important;
     align-self: start !important;
   }
 
-  /* 右：判定・クリア */
-  body.mobile-mode #draw #judgeBtn {
+  /* 右：武器選択 */
+  body.mobile-mode #draw .weapon-select-box {
     grid-column: 2 !important;
     grid-row: 3 !important;
-    margin: 0 0 4px 0 !important;
-    justify-self: start !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 4px !important;
+    justify-self: stretch !important;
   }
 
+  body.mobile-mode #draw .weapon-select-box p {
+    font-size: 9px !important;
+    margin: 0 0 2px !important;
+  }
+
+  body.mobile-mode #draw .weapon-select-box button {
+    display: block !important;
+    width: 100% !important;
+    font-size: 10px !important;
+    padding: 3px 4px !important;
+    margin: 1px 0 !important;
+    line-height: 1.05 !important;
+  }
+
+  /* 右：武器決定 */
+  body.mobile-mode #draw #judgeBtn {
+    grid-column: 2 !important;
+    grid-row: 4 !important;
+    margin: 2px 0 0 !important;
+    font-size: 10px !important;
+    padding: 4px 6px !important;
+    white-space: nowrap !important;
+    touch-action: manipulation !important;
+    pointer-events: auto !important;
+  }
+
+  /* 右：描き直す */
   body.mobile-mode #draw #clearBtn {
     grid-column: 2 !important;
-    grid-row: 4 !important;
-    margin: 0 !important;
-    justify-self: start !important;
+    grid-row: 5 !important;
+    margin: 2px 0 0 !important;
+    font-size: 10px !important;
+    padding: 4px 6px !important;
+    white-space: nowrap !important;
+    touch-action: manipulation !important;
+    pointer-events: auto !important;
   }
 
-  /* 右：戦闘開始
-     画面下にはみ出さないよう、描き直すボタンの右側へ移動 */
+  /* 判定結果は左下。戦闘開始はその右側 */
+  body.mobile-mode #draw #result {
+    grid-column: 1 !important;
+    grid-row: 5 !important;
+    margin: 2px 0 0 4px !important;
+    font-size: 11px !important;
+    line-height: 1.05 !important;
+    max-width: calc(100vw - 180px) !important;
+    overflow: hidden !important;
+  }
+
   body.mobile-mode #draw #battleBtn {
     grid-column: 2 !important;
-    grid-row: 4 !important;
+    grid-row: 5 !important;
     display: block !important;
     position: relative !important;
-    left: 100px !important;
-    right: auto !important;
-    margin: 0 !important;
+    left: 0 !important;
+    margin: 2px 0 0 !important;
+    font-size: 11px !important;
+    padding: 5px 8px !important;
     justify-self: start !important;
     z-index: 1000 !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
+    white-space: nowrap !important;
+  }
+
+  body.mobile-mode #draw #gearBtn {
+    position: absolute !important;
+    right: 4px !important;
+    top: 2px !important;
+    font-size: 15px !important;
+    padding: 2px 5px !important;
+    margin: 0 !important;
+    z-index: 1001 !important;
+  }
+
+  body.mobile-mode #adminPanel {
+    z-index: 2000 !important;
+  }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+  body.mobile-mode #draw #drawCanvas {
+    width: min(36vh, 43vw) !important;
+    height: min(36vh, 43vw) !important;
+  }
+  body.mobile-mode #draw .weapon-select-box button {
+    padding: 2px 3px !important;
+    font-size: 9px !important;
+  }
+  body.mobile-mode #draw #judgeBtn,
+  body.mobile-mode #draw #clearBtn,
+  body.mobile-mode #draw #battleBtn {
+    font-size: 9px !important;
+    padding: 3px 5px !important;
   }
 }
 
@@ -809,14 +886,36 @@ function chooseDevice(mode) {
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
   goDraw();
 
-  // 横画面への切り替えは「待たずに」行う。
-  // orientation.lock が使えない端末でも、ボタン操作を止めない。
+  // スマホ版は横画面を推奨・可能ならロックする。
+  // ロックできない端末でも、そのままゲームを続けられるようにする。
   if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
     setTimeout(() => {
       screen.orientation.lock('landscape').catch(() => {});
     }, 0);
   }
 }
+
+// 画面回転で「描画画面」に戻ったように見える問題を防ぐ。
+// 回転前にゲーム画面だった場合は、回転後もゲーム画面を維持する。
+window.addEventListener('orientationchange', () => {
+  setTimeout(() => {
+    if (deviceMode !== 'mobile') return;
+    const gameAreaEl = document.getElementById('gameArea');
+    const drawEl = document.getElementById('draw');
+    const countEl = document.getElementById('count');
+    const mobileControls = document.getElementById('mobileControls');
+
+    if (gameAreaEl && !gameAreaEl.classList.contains('hidden')) {
+      drawEl?.classList.add('hidden');
+      countEl?.classList.add('hidden');
+      gameAreaEl.classList.remove('hidden');
+      if (mobileControls) {
+        mobileControls.style.display = 'block';
+        mobileControls.style.pointerEvents = 'none';
+      }
+    }
+  }, 150);
+});
 function goDraw() {
   title.classList.add("hidden");
   drawDiv.classList.remove("hidden");
