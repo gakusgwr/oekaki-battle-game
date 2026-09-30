@@ -1571,29 +1571,71 @@ function judge() {
   document.getElementById("battleBtn").classList.remove("hidden");
 }
 function startCountdown() {
-  setScreen("countdown");
+  // 画面切り替えはCSSのgridやhidden指定に左右されないよう、
+  // ここでは各画面を明示的にON/OFFする。
+  const drawScreen = document.getElementById("draw");
+  const countScreen = document.getElementById("count");
+  const gameScreen = document.getElementById("gameArea");
+  const mobileControls = document.getElementById("mobileControls");
+
+  currentScreen = "countdown";
+  drawScreen.classList.add("hidden");
+  gameScreen.classList.add("hidden");
+  countScreen.classList.remove("hidden");
+  if (mobileControls) {
+    mobileControls.style.display = "none";
+    mobileControls.style.pointerEvents = "none";
+  }
+
   let n = 3;
   const countText = document.getElementById("countText");
   countText.textContent = "3";
   mouse.x = p.x;
   mouse.y = p.y;
+
   if (deviceMode === 'mobile') {
     document.getElementById("chargeContainer").classList.toggle("hidden", weapon === "🪄");
-    document.getElementById("guideText").innerHTML = weapon === "🏹" ? "左スティックで移動 / 右スティックで狙う / 🏹攻撃を長押し→離して発射" : weapon === "🚙" ? "左スティックで移動 / 右スティックで突進方向を決める / 🚙攻撃を長押し→離して突進" : weapon === "🪄" ? "左スティックで移動 / 攻撃で追尾弾 / 必殺ボタンで必殺技" : "左スティックで移動 / 攻撃を長押し→離して攻撃 / 必殺ボタンで必殺技";
+    document.getElementById("guideText").innerHTML =
+      weapon === "🏹"
+        ? "左スティックで移動 / 右スティックで狙う / 🏹攻撃を長押し→離して発射"
+        : weapon === "🚙"
+          ? "左スティックで移動 / 右スティックで突進方向を決める / 🚙攻撃を長押し→離して突進"
+          : weapon === "🪄"
+            ? "左スティックで移動 / 攻撃で追尾弾 / 必殺ボタンで必殺技"
+            : "左スティックで移動 / 攻撃を長押し→離して攻撃 / 必殺ボタンで必殺技";
   } else if (weapon === "🪄") {
     document.getElementById("chargeContainer").classList.add("hidden");
-    document.getElementById("guideText").innerHTML = "設定キーで移動 / <b>攻撃キー単押しで追尾弾7発同時発射 (クールタイム2.5秒)</b> / <b>[Q] キーで必殺技</b>";
+    document.getElementById("guideText").innerHTML =
+      "設定キーで移動 / <b>攻撃キー単押しで追尾弾7発同時発射 (クールタイム2.5秒)</b> / <b>[Q] キーで必殺技</b>";
   } else {
     document.getElementById("chargeContainer").classList.remove("hidden");
-    document.getElementById("guideText").innerHTML = "設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b>";
+    document.getElementById("guideText").innerHTML =
+      "設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b>";
   }
+
   const t = setInterval(() => {
     n--;
-    if (n > 0) countText.textContent = String(n);
-    else if (n === 0) countText.textContent = "GO!";
-    else {
-      clearInterval(t);
-      setScreen("game");
+    if (n > 0) {
+      countText.textContent = String(n);
+      return;
+    }
+
+    if (n === 0) {
+      countText.textContent = "GO!";
+      return;
+    }
+
+    clearInterval(t);
+
+    // カウントダウン終了 → 必ず戦闘画面へ
+    currentScreen = "game";
+    countScreen.classList.add("hidden");
+    drawScreen.classList.add("hidden");
+    gameScreen.classList.remove("hidden");
+
+    if (mobileControls) {
+      mobileControls.style.display = deviceMode === "mobile" ? "block" : "none";
+      mobileControls.style.pointerEvents = "none";
     }
   }, 1000);
 }
