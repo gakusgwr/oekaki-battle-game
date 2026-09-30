@@ -844,6 +844,13 @@ body.mobile-mode #mobileControls { z-index:160; }
 }
 
 /* MOBILE MODE CENTER OVERRIDE
+
+/* 画面切り替え用：中央配置CSSの !important が hidden を上書きしないようにする */
+body.mobile-mode #draw.hidden,
+body.mobile-mode #count.hidden,
+body.mobile-mode #gameArea.hidden {
+  display: none !important;
+}
    画面幅・ブラウザの表示モードに関係なく、描画画面の操作UIを中央へ配置 */
 body.mobile-mode #draw {
   display: grid !important;
