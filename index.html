@@ -564,15 +564,16 @@ body.mobile-mode #mobileControls { z-index:160; }
     justify-self: start !important;
   }
 
-  /* 右：戦闘開始 ← ここ */
+  /* 右：戦闘開始
+     画面下にはみ出さないよう、描き直すボタンの右側へ移動 */
   body.mobile-mode #draw #battleBtn {
     grid-column: 2 !important;
-    grid-row: 5 !important;
+    grid-row: 4 !important;
     display: block !important;
     position: relative !important;
-    left: 0 !important;
+    left: 100px !important;
     right: auto !important;
-    margin: 8px 0 0 0 !important;
+    margin: 0 !important;
     justify-self: start !important;
     z-index: 1000 !important;
     pointer-events: auto !important;
