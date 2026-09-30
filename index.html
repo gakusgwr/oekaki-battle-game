@@ -1946,6 +1946,262 @@ body:not(.mobile-mode) #draw:not(.hidden) #battleBtn {
   body.mobile-mode #draw:not(.hidden) #battleBtn.hidden { display:none !important; }
 }
 
+
+/* FINAL MOBILE DRAW V6 - high, non-overlapping layout */
+body.mobile-mode #draw:not(.hidden) > br {
+  display:none !important;
+}
+
+@media (orientation:landscape) {
+  body.mobile-mode #draw:not(.hidden) {
+    display:grid !important;
+    grid-template-columns:minmax(230px,38vw) minmax(260px,1fr) !important;
+    grid-template-rows:22px 34px 46px 46px 46px !important;
+    width:100vw !important;
+    height:100vh !important;
+    max-height:100vh !important;
+    min-height:0 !important;
+    box-sizing:border-box !important;
+    overflow:hidden !important;
+    align-content:start !important;
+    justify-items:center !important;
+    gap:2px 12px !important;
+    padding:2px 8px !important;
+    text-align:center !important;
+  }
+
+  /* タイトル */
+  body.mobile-mode #draw:not(.hidden) h2 {
+    grid-column:1 / -1 !important;
+    grid-row:1 !important;
+    margin:0 !important;
+    padding:0 !important;
+    font-size:12px !important;
+    line-height:22px !important;
+  }
+
+  /* 左：ガイドをキャンバスの真上 */
+  body.mobile-mode #draw:not(.hidden) #guideInstruction {
+    grid-column:1 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    max-width:100% !important;
+    height:34px !important;
+    margin:0 !important;
+    padding:0 2px !important;
+    box-sizing:border-box !important;
+    font-size:8px !important;
+    line-height:10px !important;
+    white-space:normal !important;
+    overflow:hidden !important;
+    text-align:center !important;
+    align-self:center !important;
+  }
+
+  /* 左：キャンバスを上へ */
+  body.mobile-mode #draw:not(.hidden) #drawCanvas {
+    grid-column:1 !important;
+    grid-row:3 / 6 !important;
+    width:min(32vh,34vw) !important;
+    height:min(32vh,34vw) !important;
+    max-width:34vw !important;
+    max-height:32vh !important;
+    margin:0 auto !important;
+    display:block !important;
+    justify-self:center !important;
+    align-self:start !important;
+  }
+
+  /* 右上：武器選択 */
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box {
+    grid-column:2 !important;
+    grid-row:2 !important;
+    width:100% !important;
+    height:34px !important;
+    max-width:none !important;
+    margin:0 !important;
+    padding:0 !important;
+    box-sizing:border-box !important;
+    text-align:center !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    z-index:4000 !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box p {
+    display:block !important;
+    margin:0 !important;
+    height:11px !important;
+    font-size:7px !important;
+    line-height:11px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box button {
+    display:inline-block !important;
+    position:relative !important;
+    min-width:45px !important;
+    height:20px !important;
+    margin:1px !important;
+    padding:1px 3px !important;
+    font-size:7px !important;
+    line-height:18px !important;
+    vertical-align:middle !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+  }
+
+  /* 右中央：各ボタンを別々の行にして絶対に重ねない */
+  body.mobile-mode #draw:not(.hidden) #judgeBtn {
+    grid-column:2 !important;
+    grid-row:3 !important;
+    display:inline-block !important;
+    position:relative !important;
+    left:auto !important;
+    margin:0 !important;
+    padding:5px 10px !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    z-index:5000 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    white-space:nowrap !important;
+    align-self:center !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #clearBtn {
+    grid-column:2 !important;
+    grid-row:4 !important;
+    display:inline-block !important;
+    position:relative !important;
+    left:auto !important;
+    margin:0 !important;
+    padding:5px 10px !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    z-index:5000 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    white-space:nowrap !important;
+    align-self:center !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #battleBtn.hidden {
+    display:none !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #battleBtn:not(.hidden) {
+    grid-column:2 !important;
+    grid-row:5 !important;
+    display:inline-block !important;
+    position:relative !important;
+    left:auto !important;
+    margin:0 !important;
+    padding:5px 12px !important;
+    font-size:9px !important;
+    line-height:1 !important;
+    z-index:5000 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+    white-space:nowrap !important;
+    align-self:center !important;
+  }
+
+  /* 結果は右側のさらに下へ押し出さない */
+  body.mobile-mode #draw:not(.hidden) #result {
+    position:absolute !important;
+    left:50% !important;
+    top:calc(2px + 22px + 34px + 46px + 46px + 46px) !important;
+    transform:translateX(-50%) !important;
+    margin:0 !important;
+    max-width:90vw !important;
+    font-size:8px !important;
+    line-height:1 !important;
+    z-index:3500 !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #gearBtn {
+    position:absolute !important;
+    right:4px !important;
+    top:2px !important;
+    z-index:6000 !important;
+  }
+}
+
+@media (orientation:portrait) {
+  body.mobile-mode #draw:not(.hidden) {
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    width:100vw !important;
+    height:100vh !important;
+    max-height:100vh !important;
+    overflow:hidden !important;
+    box-sizing:border-box !important;
+    padding:2px 4px !important;
+    gap:1px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) h2 {
+    order:1 !important;
+    margin:0 !important;
+    font-size:11px !important;
+    line-height:14px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #guideInstruction {
+    order:2 !important;
+    margin:0 !important;
+    max-width:96vw !important;
+    font-size:7px !important;
+    line-height:8px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #drawCanvas {
+    order:3 !important;
+    width:20vh !important;
+    height:20vh !important;
+    max-height:20vh !important;
+    margin:0 auto !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box {
+    order:4 !important;
+    width:98vw !important;
+    margin:0 !important;
+    white-space:nowrap !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box p {
+    display:none !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) .weapon-select-box button {
+    min-width:43px !important;
+    height:20px !important;
+    margin:1px !important;
+    padding:1px 3px !important;
+    font-size:7px !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #judgeBtn,
+  body.mobile-mode #draw:not(.hidden) #clearBtn,
+  body.mobile-mode #draw:not(.hidden) #battleBtn:not(.hidden) {
+    order:5 !important;
+    display:inline-block !important;
+    margin:1px 2px !important;
+    padding:4px 6px !important;
+    font-size:8px !important;
+    z-index:5000 !important;
+    pointer-events:auto !important;
+    touch-action:manipulation !important;
+  }
+
+  body.mobile-mode #draw:not(.hidden) #battleBtn.hidden {
+    display:none !important;
+  }
+}
+
 </style>
 </head>
 <body>
