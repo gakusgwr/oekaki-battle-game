@@ -621,7 +621,7 @@ body.mobile-mode #mobileControls { z-index:160; }
   <p id="guideText">設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b></p>
 </div>
 <div id="mobileControls" aria-label="スマホ操作パネル">
-  <div id="mobileHint">左：移動　右：照準　攻撃：長押し→離す</div>
+  <div id="mobileHint">左：移動　右：照準　攻撃：タップ</div>
   <div id="moveStick" class="mobile-stick"><div class="stick-knob"></div></div>
   <div id="aimStick" class="mobile-stick"><div class="stick-knob"></div></div>
   <button id="mobileAttack" class="mobile-btn">⚔️<br>攻撃</button>
@@ -803,21 +803,29 @@ const drawDiv = document.getElementById("draw");
 const gameArea = document.getElementById("gameArea");
 const msg = document.getElementById("msg");
 let deviceMode = 'pc';
-async function chooseDevice(mode) {
+function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
-  document.getElementById('mobileControls').style.display = mode === 'mobile' ? 'block' : 'none';
-  // スマホ版を選んだときは、対応ブラウザなら横向きを自動要求する。
-  if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
-    try {
-      await screen.orientation.lock('landscape');
-    } catch (e) {
-      // ブラウザの仕様でロックできない場合は、CSSの縦向き案内を表示する。
-    }
-  }
   goDraw();
+
+  // 横画面への切り替えは「待たずに」行う。
+  // orientation.lock が使えない端末でも、ボタン操作を止めない。
+  if (mode === 'mobile' && screen.orientation && screen.orientation.lock) {
+    setTimeout(() => {
+      screen.orientation.lock('landscape').catch(() => {});
+    }, 0);
+  }
 }
-function goDraw() { title.classList.add("hidden"); drawDiv.classList.remove("hidden"); document.getElementById('mobileControls').style.display = 'none'; redrawCanvas(); }
+function goDraw() {
+  title.classList.add("hidden");
+  drawDiv.classList.remove("hidden");
+  const mobileControls = document.getElementById('mobileControls');
+  if (mobileControls) {
+    mobileControls.style.display = 'none';
+    mobileControls.style.pointerEvents = 'none';
+  }
+  redrawCanvas();
+}
 window.controlKeys = { attack: "e", chest: "f", shield: "g", up: "w", down: "s", left: "a", right: "d" };
 window.attackExtraKeys = [];
 window.keySettingEditing = null;
@@ -2281,21 +2289,41 @@ function updateRikuUI() {
   aimStick.addEventListener('pointermove', e => { if (e.pointerId===aimPointer) { e.preventDefault(); updateStick(aimStick,aimKnob,e,false); } }, {passive:false});
   function stopAim(e) { if (e.pointerId===aimPointer) { e.preventDefault(); aimPointer=null; aimKnob.style.transform='translate(-50%,-50%)'; } }
   aimStick.addEventListener('pointerup', stopAim, {passive:false}); aimStick.addEventListener('pointercancel', stopAim, {passive:false});
-  // Multi-touch: keep track of every finger holding the attack button.
+  // スマホ攻撃は「長押し→離す」ではなく、タップ1回で即攻撃。
+  // 右スティックで向きを決めてから攻撃ボタンを押すだけにする。
   const attackPointers = new Set();
-  function attackPointerDown(e) {
+  function mobileAttackOnce(e) {
     if (deviceMode !== 'mobile') return;
     e.preventDefault();
+    e.stopPropagation();
     attackPointers.add(e.pointerId);
     attackBtn.setPointerCapture?.(e.pointerId);
-    if (attackPointers.size === 1) beginAttackCharge();
+
+    if (attackPointers.size > 1) return;
+    if (gameOver || stageClear || isPausedForSpecial || attackCooldown > 0) return;
+
+    charging = false;
+    charge = 0;
+
+    if (weapon === "🪄") {
+      if (wandCooldown <= 0) {
+        fireWandMagic();
+        wandCooldown = window.adminNoCooldown ? 0 : 2.5;
+      } else {
+        msg.textContent = "⏳ 魔法の杖クールタイム中...";
+      }
+      return;
+    }
+
+    if (bulletHellReady) fireBulletHell();
+    else attack();
+    attackCooldown = window.adminNoCooldown ? 0 : 0.3;
   }
   function attackPointerUp(e) {
     e.preventDefault();
     attackPointers.delete(e.pointerId);
-    if (attackPointers.size === 0) releaseAttackCharge();
   }
-  attackBtn.addEventListener('pointerdown', attackPointerDown, {passive:false});
+  attackBtn.addEventListener('pointerdown', mobileAttackOnce, {passive:false});
   attackBtn.addEventListener('pointerup', attackPointerUp, {passive:false});
   attackBtn.addEventListener('pointercancel', attackPointerUp, {passive:false});
   specialBtn.addEventListener('pointerdown', e => {
