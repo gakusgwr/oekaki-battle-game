@@ -3097,6 +3097,90 @@ body.mobile-mode #battlePickupNotice.show {
   transform: translateX(-50%) scale(1) !important;
 }
 
+
+/* FINAL BATTLE LAYOUT V13 - HUD POSITIONS */
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #gameArea {
+    justify-content: flex-start !important;
+    padding-top: 0 !important;
+    padding-bottom: 70px !important;
+    gap: 0 !important;
+  }
+
+  /* 左上：必殺技ゲージ */
+  body.mobile-mode #gameArea #specialGaugeContainer {
+    position: fixed !important;
+    top: 6px !important;
+    left: 8px !important;
+    transform: none !important;
+    width: 220px !important;
+    height: 22px !important;
+    margin: 0 !important;
+    padding: 2px 6px !important;
+    background: rgba(0,0,0,.92) !important;
+    border: 1px solid #ff3366 !important;
+    border-radius: 7px !important;
+    justify-content: flex-start !important;
+    z-index: 99990 !important;
+  }
+
+  body.mobile-mode #gameArea #specialGauge {
+    width: 130px !important;
+    height: 10px !important;
+  }
+
+  body.mobile-mode #gameArea #specialGaugePercent {
+    font-size: 10px !important;
+  }
+
+  /* 左上：チャージゲージ */
+  body.mobile-mode #gameArea #chargeContainer {
+    position: fixed !important;
+    top: 32px !important;
+    left: 8px !important;
+    width: 220px !important;
+    height: 22px !important;
+    margin: 0 !important;
+    padding: 2px 6px !important;
+    background: rgba(0,0,0,.92) !important;
+    border-radius: 7px !important;
+    z-index: 99989 !important;
+  }
+
+  body.mobile-mode #gameArea #charge {
+    width: 130px !important;
+    height: 10px !important;
+  }
+
+  /* 右上：取得通知 */
+  body.mobile-mode #battlePickupNotice {
+    top: 6px !important;
+    left: auto !important;
+    right: 8px !important;
+    transform: scale(.96) !important;
+    min-width: 190px !important;
+    max-width: 34vw !important;
+    padding: 6px 10px !important;
+    font-size: 13px !important;
+    z-index: 99999 !important;
+  }
+
+  body.mobile-mode #battlePickupNotice.show {
+    transform: scale(1) !important;
+  }
+
+  /* 戦闘画面：さらに上へ */
+  body.mobile-mode #gameArea #game {
+    width: min(78vw, calc((100vh - 82px) * 1.8)) !important;
+    max-width: 78vw !important;
+    max-height: calc(100vh - 82px) !important;
+    height: auto !important;
+    margin: -22px auto 0 !important;
+    position: relative !important;
+    z-index: 5 !important;
+  }
+}
+
 </style>
 
 
