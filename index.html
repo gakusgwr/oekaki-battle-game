@@ -5738,8 +5738,7 @@ loop();
   };
 })();
 
-<script>
-/* V15: 戦闘HUDをJavaScriptで直接固定。CSS競合を完全回避 */
+/* V16: 戦闘HUDをJavaScriptで直接固定。V15のscriptタグ混入を修正 */
 (function forceBattleLayout(){
   function apply(){
     if(!document.body.classList.contains("mobile-mode")) return;
@@ -5788,7 +5787,6 @@ loop();
   window.addEventListener("resize",apply);
   window.addEventListener("orientationchange",()=>setTimeout(apply,200));
 })();
-</script>
 </script>
 </body>
 </html>
