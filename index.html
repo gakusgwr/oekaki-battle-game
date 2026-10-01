@@ -5206,12 +5206,14 @@ loop();
     };
   }
 
-  /* Special-code button can only open the input on the drawing screen. */
+  /* Special-code button can only open the input on the drawing screen.
+     Keep the original admin behavior intact on the drawing screen. */
+  const originalHushClick = hush ? hush.onclick : null;
   if (hush) {
-    hush.onclick = function() {
+    hush.onclick = function(e) {
       if (currentScreen !== "draw") return;
-      if (typeof openAdminPanel === "function") {
-        openAdminPanel();
+      if (typeof originalHushClick === "function") {
+        originalHushClick.call(hush, e);
       }
     };
   }
