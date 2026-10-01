@@ -2929,6 +2929,21 @@ body.mobile-mode #draw:not(.hidden) > br {
   }
 }
 
+
+/* MOBILE BATTLE SCREEN: slightly smaller + moved upward */
+@media (max-width: 900px) and (orientation: landscape) {
+  body.mobile-mode #gameArea {
+    padding-top: 0 !important;
+    justify-content: flex-start !important;
+  }
+
+  body.mobile-mode #gameArea #game {
+    width: min(94vw, calc((100vh - 120px) * 1.78)) !important;
+    max-height: calc(100vh - 120px) !important;
+    transform: translateY(-8px) !important;
+  }
+}
+
 </style>
 
 
