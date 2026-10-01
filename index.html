@@ -3271,6 +3271,63 @@ body.mobile-mode #gameArea #game {
   position: relative !important;
   z-index: 5 !important;
 }
+
+/* V18: スペシャルコード画面とスマホ戦闘画面を強制レイアウト */
+#specialCodeBox{
+  background:#111 !important;
+  z-index:1000000 !important;
+  isolation:isolate !important;
+}
+#specialCodeBox .special-code-input-panel{
+  position:relative !important;
+  z-index:1000002 !important;
+}
+#specialCodeBox #specialCodeInput{
+  position:relative !important;
+  z-index:1000003 !important;
+  display:block !important;
+  width:min(80vw,360px) !important;
+  min-height:44px !important;
+  box-sizing:border-box !important;
+  margin:15px auto !important;
+  font-size:20px !important;
+  background:#fff !important;
+  color:#111 !important;
+  pointer-events:auto !important;
+  touch-action:auto !important;
+}
+
+/* コード入力中は描画キャンバスを完全に隠す */
+body.special-code-open #drawCanvas,
+body.special-code-open #draw{
+  visibility:hidden !important;
+  pointer-events:none !important;
+}
+
+/* スマホ戦闘画面：周囲のレイアウトに押されないよう直接配置 */
+body.mobile-mode #gameArea #game{
+  position:fixed !important;
+  left:50% !important;
+  top:76px !important;
+  transform:translateX(-50%) !important;
+  width:min(72vw,760px) !important;
+  max-width:72vw !important;
+  height:auto !important;
+  max-height:calc(100vh - 155px) !important;
+  margin:0 !important;
+  z-index:5 !important;
+}
+
+/* 戦闘画面上部の余計な空間を削る */
+body.mobile-mode #gameArea{
+  position:relative !important;
+  min-height:100vh !important;
+  padding:0 !important;
+  margin:0 !important;
+  justify-content:flex-start !important;
+  gap:0 !important;
+}
+
 </style>
 
 
@@ -5873,6 +5930,42 @@ loop();
   window.addEventListener("resize",apply);
   window.addEventListener("orientationchange",()=>setTimeout(apply,200));
 })();
+
+/* V18 JS: スペシャルコード画面を開いたら描画画面を完全に退避 */
+(function v18SpecialCodeAndBattleFix(){
+  const box=document.getElementById("specialCodeBox");
+  const input=document.getElementById("specialCodeInput");
+  if(!box) return;
+
+  function sync(){
+    const open=!box.classList.contains("hidden");
+    document.body.classList.toggle("special-code-open",open);
+    if(open){
+      box.style.zIndex="1000000";
+      if(input){
+        input.style.zIndex="1000003";
+        input.style.pointerEvents="auto";
+      }
+    }
+  }
+
+  const observer=new MutationObserver(sync);
+  observer.observe(box,{attributes:true,attributeFilter:["class"]});
+  sync();
+
+  // コード入力画面を開いたときは確実に入力欄へフォーカス
+  document.addEventListener("click",e=>{
+    if(e.target && e.target.id==="hushBtn"){
+      setTimeout(()=>{
+        sync();
+        if(!box.classList.contains("hidden") && input){
+          input.focus();
+        }
+      },30);
+    }
+  },true);
+})();
+
 </script>
 </body>
 </html>
