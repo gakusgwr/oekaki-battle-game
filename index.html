@@ -5737,6 +5737,58 @@ loop();
     timer=setTimeout(()=>notice.classList.remove("show"),2200);
   };
 })();
+
+<script>
+/* V15: 戦闘HUDをJavaScriptで直接固定。CSS競合を完全回避 */
+(function forceBattleLayout(){
+  function apply(){
+    if(!document.body.classList.contains("mobile-mode")) return;
+    const gameArea=document.getElementById("gameArea");
+    if(!gameArea || gameArea.classList.contains("hidden")) return;
+
+    const special=document.getElementById("specialGaugeContainer");
+    const charge=document.getElementById("chargeContainer");
+    const notice=document.getElementById("battlePickupNotice");
+    const game=document.getElementById("game");
+
+    if(special){
+      Object.assign(special.style,{
+        position:"fixed",top:"6px",left:"8px",right:"auto",
+        transform:"none",width:"220px",height:"22px",
+        margin:"0",padding:"2px 6px",zIndex:"99990"
+      });
+    }
+    if(charge){
+      Object.assign(charge.style,{
+        position:"fixed",top:"34px",left:"8px",right:"auto",
+        width:"220px",height:"22px",
+        margin:"0",padding:"2px 6px",zIndex:"99989"
+      });
+    }
+    if(notice){
+      Object.assign(notice.style,{
+        position:"fixed",top:"6px",left:"auto",right:"8px",
+        zIndex:"99999"
+      });
+    }
+    if(game){
+      Object.assign(game.style,{
+        position:"relative",margin:"-45px auto 0",
+        zIndex:"5",height:"auto",
+        width:"min(78vw, 820px)",maxWidth:"78vw",
+        maxHeight:"calc(100vh - 70px)"
+      });
+    }
+  }
+
+  const observer=new MutationObserver(apply);
+  observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:["class","style"]});
+  setInterval(apply,500);
+  document.addEventListener("DOMContentLoaded",apply);
+  window.addEventListener("resize",apply);
+  window.addEventListener("orientationchange",()=>setTimeout(apply,200));
+})();
+</script>
 </script>
 </body>
 </html>
