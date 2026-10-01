@@ -2885,6 +2885,41 @@ body.mobile-mode #draw:not(.hidden) > br {
   }
 }
 
+
+/* FINAL SPECIAL GAUGE */
+#specialGaugeContainer {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  width:100%;
+  height:20px;
+  margin:2px auto 4px;
+  font-size:14px;
+  font-weight:bold;
+  color:#ff3366;
+}
+#specialGauge {
+  width:200px;
+  height:16px;
+  accent-color:#ff3366;
+}
+@media (max-width:900px) and (orientation:landscape) {
+  body.mobile-mode #gameArea #specialGaugeContainer {
+    flex:0 0 12px !important;
+    width:100% !important;
+    height:12px !important;
+    margin:0 !important;
+    font-size:7px !important;
+    line-height:12px !important;
+    gap:4px !important;
+  }
+  body.mobile-mode #gameArea #specialGauge {
+    width:80px !important;
+    height:7px !important;
+  }
+}
+
 </style>
 
 
@@ -2923,6 +2958,10 @@ body.mobile-mode #draw:not(.hidden) > br {
     | 必殺技ストック: <span id="specialStockText" style="color: #ff3366; font-weight: bold;">0</span>
   </div>
   <div id="chargeContainer">Charge <progress id="charge" max="150" value="0" style="width: 200px; height: 20px;"></progress></div>
+  <div id="specialGaugeContainer" aria-label="必殺技ゲージ">
+    <span>必殺技ゲージ</span>
+    <progress id="specialGauge" max="5" value="0"></progress>
+  </div>
   <div id="msg"></div>
   <canvas id="game" width="900" height="500"></canvas>
   <p id="guideText">設定キーで移動 / 攻撃キー長押し→離して攻撃 (右クリックでチャージキャンセル) / <b>[Q] キーで必殺技</b></p>
@@ -3633,8 +3672,16 @@ function getBossBaseSpeed(stg) {
   }
   return base;
 }
+function updateSpecialGauge() {
+  const gauge = document.getElementById("specialGauge");
+  if (!gauge) return;
+  gauge.max = 5;
+  gauge.value = Math.min(5, Math.max(0, specialStock));
+}
+
 function addRandomSpecialStock() {
   specialStock++;
+  updateSpecialGauge();
   msg.textContent = "🌟 必殺技ストックが+1されました！ (合計: " + specialStock + ")";
 }
 function createMinionsForStage(stg) {
@@ -3895,6 +3942,7 @@ function resetGame() {
   setStageObstacles(1);
   coins = 0;
   specialStock = 0;
+  updateSpecialGauge();
   p.hp = 150; p.max = 150; p.x = 100; p.y = 250; p.invincibility = 0;
   enemy.maxHp = 200; enemy.hp = 200; enemy.x = 700; enemy.y = 250; enemy.spawnTimer = 0;
   minions = [];
@@ -4494,6 +4542,7 @@ function update() {
   document.getElementById("coinText").textContent = coins;
   document.getElementById("charge").value = charge;
   document.getElementById("specialStockText").textContent = specialStock;
+  updateSpecialGauge();
   dmgText = dmgText.filter(t => { t.y -= 1; t.life--; return t.life > 0; });
   if (slashTimer > 0) slashTimer--;
 }
@@ -4631,6 +4680,7 @@ function executeSpecialAttack() {
   document.getElementById("specialModal").classList.add("hidden");
   isPausedForSpecial = false;
   if (specialStock > 0) specialStock--;
+  updateSpecialGauge();
   const dmgMul = kizuku2Active ? 2.0 : 1;
   if (spPoints.length < 5) {
     damageEnemy(50 * dmgMul);
