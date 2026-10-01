@@ -5738,6 +5738,92 @@ loop();
   };
 })();
 
+
+/* V17: スペシャルコード入力中はキャンバス・ゲーム操作を完全に遮断 */
+(function fixSpecialCodeInputLayer(){
+  const box = document.getElementById("specialCodeBox");
+  const input = document.getElementById("specialCodeInput");
+  const back = document.getElementById("specialCodeBack");
+  if(!box) return;
+
+  const canvases = [
+    document.getElementById("drawCanvas"),
+    document.getElementById("specialCanvas"),
+    document.getElementById("game")
+  ];
+
+  function setInputMode(active){
+    box.style.zIndex = active ? "999999" : "";
+    box.style.pointerEvents = active ? "auto" : "";
+    box.style.touchAction = active ? "auto" : "";
+    canvases.forEach(cv => {
+      if(!cv) return;
+      if(active){
+        cv.dataset.specialCodePointerEvents = cv.style.pointerEvents || "";
+        cv.style.pointerEvents = "none";
+      }else{
+        cv.style.pointerEvents = cv.dataset.specialCodePointerEvents || "";
+        delete cv.dataset.specialCodePointerEvents;
+      }
+    });
+
+    const mobileControls = document.getElementById("mobileControls");
+    if(mobileControls){
+      if(active){
+        mobileControls.dataset.specialCodeDisplay = mobileControls.style.display || "";
+        mobileControls.dataset.specialCodePointerEvents = mobileControls.style.pointerEvents || "";
+        mobileControls.style.display = "none";
+        mobileControls.style.pointerEvents = "none";
+      }else{
+        mobileControls.style.display = mobileControls.dataset.specialCodeDisplay || "";
+        mobileControls.style.pointerEvents = mobileControls.dataset.specialCodePointerEvents || "";
+        delete mobileControls.dataset.specialCodeDisplay;
+        delete mobileControls.dataset.specialCodePointerEvents;
+      }
+    }
+  }
+
+  function openCodeBox(){
+    box.classList.remove("hidden");
+    setInputMode(true);
+    requestAnimationFrame(() => {
+      if(input){
+        input.focus();
+        input.select();
+      }
+    });
+  }
+
+  function closeCodeBox(){
+    box.classList.add("hidden");
+    setInputMode(false);
+  }
+
+  if(input){
+    ["pointerdown","pointerup","touchstart","touchend","click"].forEach(type => {
+      input.addEventListener(type, e => e.stopPropagation(), {passive:false});
+    });
+  }
+  box.addEventListener("pointerdown", e => e.stopPropagation(), {passive:false});
+  box.addEventListener("touchstart", e => e.stopPropagation(), {passive:false});
+  if(back){
+    back.addEventListener("click", closeCodeBox);
+  }
+
+  window.openSpecialCodeBox = openCodeBox;
+  window.closeSpecialCodeBox = closeCodeBox;
+  window.refreshSpecialCodeLayer = () => {
+    if(!box.classList.contains("hidden")) setInputMode(true);
+  };
+
+  // 既存のスペシャルコードボタン処理を横取りせず、表示状態を監視。
+  const observer = new MutationObserver(() => {
+    if(!box.classList.contains("hidden")) setInputMode(true);
+    else setInputMode(false);
+  });
+  observer.observe(box,{attributes:true,attributeFilter:["class"]});
+})();
+
 /* V16: 戦闘HUDをJavaScriptで直接固定。V15のscriptタグ混入を修正 */
 (function forceBattleLayout(){
   function apply(){
