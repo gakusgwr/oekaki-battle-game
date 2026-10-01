@@ -3299,7 +3299,9 @@ body.mobile-mode #gameArea #game {
 
 /* コード入力中は描画キャンバスを完全に隠す */
 body.special-code-open #drawCanvas,
-body.special-code-open #draw{
+body.special-code-open #draw,
+body:has(#specialCodeBox:not(.hidden)) #drawCanvas,
+body:has(#specialCodeBox:not(.hidden)) #draw{
   visibility:hidden !important;
   pointer-events:none !important;
 }
@@ -5931,40 +5933,7 @@ loop();
   window.addEventListener("orientationchange",()=>setTimeout(apply,200));
 })();
 
-/* V18 JS: スペシャルコード画面を開いたら描画画面を完全に退避 */
-(function v18SpecialCodeAndBattleFix(){
-  const box=document.getElementById("specialCodeBox");
-  const input=document.getElementById("specialCodeInput");
-  if(!box) return;
 
-  function sync(){
-    const open=!box.classList.contains("hidden");
-    document.body.classList.toggle("special-code-open",open);
-    if(open){
-      box.style.zIndex="1000000";
-      if(input){
-        input.style.zIndex="1000003";
-        input.style.pointerEvents="auto";
-      }
-    }
-  }
-
-  const observer=new MutationObserver(sync);
-  observer.observe(box,{attributes:true,attributeFilter:["class"]});
-  sync();
-
-  // コード入力画面を開いたときは確実に入力欄へフォーカス
-  document.addEventListener("click",e=>{
-    if(e.target && e.target.id==="hushBtn"){
-      setTimeout(()=>{
-        sync();
-        if(!box.classList.contains("hidden") && input){
-          input.focus();
-        }
-      },30);
-    }
-  },true);
-})();
 
 </script>
 </body>
