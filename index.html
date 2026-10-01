@@ -2904,6 +2904,11 @@ body.mobile-mode #draw:not(.hidden) > br {
   height:16px;
   accent-color:#ff3366;
 }
+#specialGaugePercent {
+  min-width:36px;
+  font-size:12px;
+  color:#ff99aa;
+}
 @media (max-width:900px) and (orientation:landscape) {
   body.mobile-mode #gameArea #specialGaugeContainer {
     flex:0 0 12px !important;
@@ -2917,6 +2922,10 @@ body.mobile-mode #draw:not(.hidden) > br {
   body.mobile-mode #gameArea #specialGauge {
     width:80px !important;
     height:7px !important;
+  }
+  body.mobile-mode #gameArea #specialGaugePercent {
+    min-width:22px !important;
+    font-size:7px !important;
   }
 }
 
@@ -2960,7 +2969,8 @@ body.mobile-mode #draw:not(.hidden) > br {
   <div id="chargeContainer">Charge <progress id="charge" max="150" value="0" style="width: 200px; height: 20px;"></progress></div>
   <div id="specialGaugeContainer" aria-label="必殺技ゲージ">
     <span>必殺技ゲージ</span>
-    <progress id="specialGauge" max="5" value="0"></progress>
+    <progress id="specialGauge" max="1" value="0"></progress>
+    <span id="specialGaugePercent">0%</span>
   </div>
   <div id="msg"></div>
   <canvas id="game" width="900" height="500"></canvas>
@@ -3636,12 +3646,17 @@ let currentShopType = 1;
 let shopMaxSlots = 1;
 let shopSlotsUsed = 0;
 let isShopDiscount = false;
+let shopNeedsAdvance = false;
 // Kizuku2 & Riku Codes
 let kizuku2Active = false;
 let kizukuItems = { heal: 6, atk: 5, shield: 4, ghost: 3, bullet: 3, lightning: 2 };
 let rikuActive = false;
 let rikuSpecials = { bomb: 3, gatling: 2, meteor: 3, blackhole: 2, slash: 3 };
 let specialStock = 0; // 必殺技ストック数
+// ボスへの累計ダメージでたまる必殺技ゲージ。
+// 1ステージのボス最大HPの75%分を削るとストック+1、ゲージは0に戻る。
+// ストックはステージをまたいで引き継ぎ、ゲージだけ次ステージで0に戻る。
+let specialGaugeDamage = 0;
 let isGatlingActive = false, gatlingTimer = 0;
 let isBlackholeActive = false, blackholeTimer = 0;
 let bigSlashAnimTimer = 0;
@@ -3672,11 +3687,22 @@ function getBossBaseSpeed(stg) {
   }
   return base;
 }
+function getSpecialGaugeMaxDamage() {
+  const bossMax = Number(enemy && enemy.maxHp) || Number(stageBosses[stage - 1]?.hp) || 1;
+  return Math.max(1, bossMax * 0.75);
+}
+
 function updateSpecialGauge() {
   const gauge = document.getElementById("specialGauge");
   if (!gauge) return;
-  gauge.max = 5;
-  gauge.value = Math.min(5, Math.max(0, specialStock));
+  const maxDamage = getSpecialGaugeMaxDamage();
+  gauge.max = maxDamage;
+  gauge.value = Math.min(maxDamage, Math.max(0, specialGaugeDamage));
+  const percent = Math.min(100, Math.max(0, Math.round((specialGaugeDamage / maxDamage) * 100)));
+  gauge.setAttribute("aria-valuenow", String(percent));
+  gauge.title = "ボスへのダメージでチャージ：" + percent + "%";
+  const percentEl = document.getElementById("specialGaugePercent");
+  if (percentEl) percentEl.textContent = percent + "%";
 }
 
 function addRandomSpecialStock() {
@@ -3846,6 +3872,17 @@ function damageEnemy(amount) {
   enemy.hp = Math.max(0, enemy.hp - amount);
   if (actual > 0) {
     dmgText.push({ x: enemy.x, y: enemy.y, t: "-" + Math.floor(actual), life: 45 });
+
+    // ボスに与えた実ダメージだけを必殺技ゲージへ加算。
+    // 子分へのダメージやショップ購入ではこのゲージは増えない。
+    specialGaugeDamage += actual;
+    const gaugeMaxDamage = getSpecialGaugeMaxDamage();
+    while (specialGaugeDamage >= gaugeMaxDamage) {
+      specialGaugeDamage -= gaugeMaxDamage;
+      specialStock++;
+      msg.textContent = "🌟 必殺技ゲージMAX！ ストック+1 (合計: " + specialStock + ")";
+    }
+    updateSpecialGauge();
   }
   if (enemy.hp <= 0) {
     coins += 25;
@@ -3942,6 +3979,7 @@ function resetGame() {
   setStageObstacles(1);
   coins = 0;
   specialStock = 0;
+  specialGaugeDamage = 0;
   updateSpecialGauge();
   p.hp = 150; p.max = 150; p.x = 100; p.y = 250; p.invincibility = 0;
   enemy.maxHp = 200; enemy.hp = 200; enemy.x = 700; enemy.y = 250; enemy.spawnTimer = 0;
@@ -4015,10 +4053,16 @@ function proceedToNextStageNumber() {
     resetGame();
     return;
   }
+  // ステージをまたぐと「ゲージだけ」0に戻し、必殺技ストックはそのまま引き継ぐ。
+  specialGaugeDamage = 0;
+  updateSpecialGauge();
+
   p.x = 100; p.y = 250;
   p.hp = Math.min(p.max, p.hp + 30);
   enemy.maxHp = stageBosses[stage - 1].hp;
   enemy.hp = enemy.maxHp;
+  specialGaugeDamage = 0;
+  updateSpecialGauge();
   enemy.x = 700; enemy.y = 250;
   enemyBullets = []; magmaZones = [];
   enemyShootTimer = 0; rushTimer = 0; rushDownTimer = 0; dashTimer = 0;
@@ -4031,8 +4075,9 @@ function proceedToNextStageNumber() {
   document.getElementById("stageLabel").textContent = stageBosses[stage - 1].name;
 }
 // Shop Logic
-function openShop(type) {
+function openShop(type, advanceAfterClose = true) {
   currentShopType = type;
+  shopNeedsAdvance = !!advanceAfterClose;
   isShopDiscount = (type === 2);
   shopMaxSlots = (type === 1 ? 1 : 5);
   shopSlotsUsed = 0;
@@ -4040,6 +4085,13 @@ function openShop(type) {
   document.getElementById("expandSlotBtn").classList.toggle("hidden", type === 2);
   updateShopUI();
   document.getElementById("shopModal").classList.remove("hidden");
+
+  // スマホ版ではショップ中に戦闘用タッチUIが重ならないよう一時的に隠す。
+  const mobileControls = document.getElementById("mobileControls");
+  if (mobileControls) {
+    mobileControls.style.display = "none";
+    mobileControls.style.pointerEvents = "none";
+  }
 }
 function updateShopUI() {
   document.getElementById("shopCoin").textContent = coins;
@@ -4094,7 +4146,20 @@ function buyShopItem(item) {
 }
 function closeShop() {
   document.getElementById("shopModal").classList.add("hidden");
-  proceedToNextStageNumber();
+
+  // 戦闘画面へ戻る場合だけスマホ操作UIを復帰。
+  const mobileControls = document.getElementById("mobileControls");
+  if (mobileControls) {
+    const showControls = deviceMode === "mobile" && currentScreen === "game";
+    mobileControls.style.display = showControls ? "block" : "none";
+    mobileControls.style.pointerEvents = "none";
+  }
+
+  // ステージクリアから開いたショップだけ次ステージへ進む。
+  if (shopNeedsAdvance) {
+    shopNeedsAdvance = false;
+    proceedToNextStageNumber();
+  }
 }
 createMinionsForStage(1);
 spawnBox();
@@ -4932,7 +4997,7 @@ loop();
   });
   document.getElementById("admHeal").onclick = () => { p.hp = p.max; };
   document.getElementById("admAddCoin").onclick = () => { coins += 500; msg.textContent = "💰 コイン +500 追加！"; };
-  document.getElementById("admOpenShop").onclick = () => { openShop(1); };
+  document.getElementById("admOpenShop").onclick = () => { openShop(1, false); };
   document.getElementById("admClearStage").onclick = () => { enemy.hp = 0; nextStage(); };
   document.getElementById("admMaxSpecial").onclick = () => {
     addRandomSpecialStock();
