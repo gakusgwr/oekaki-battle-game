@@ -6119,18 +6119,67 @@ loop();
     close.style.setProperty("z-index","1000001","important");
   };
 
-  window.closeDrawCanvasNow=function(){
+  function resetDrawCanvasExpand(){
     document.body.classList.remove("draw-canvas-expanded");
-
-    ["position","left","top","width","height","max-width","max-height","margin","z-index"].forEach(p=>dc.style.removeProperty(p));
+    ["position","left","top","width","height","max-width","max-height","margin","z-index","touch-action"].forEach(p=>dc.style.removeProperty(p));
     expand.style.removeProperty("display");
+    expand.style.removeProperty("visibility");
+    expand.style.removeProperty("pointer-events");
+    ["display","position","right","top","transform","z-index","visibility","pointer-events"].forEach(p=>close.style.removeProperty(p));
+  }
 
-    ["display","position","right","top","transform","z-index"].forEach(p=>close.style.removeProperty(p));
+  window.closeDrawCanvasNow=function(){
+    resetDrawCanvasExpand();
+    // 閉じた直後から、もう一度「大きくする」を押せるようにする
+    expand.style.setProperty("display","block","important");
+    expand.style.setProperty("visibility","visible","important");
+    expand.style.setProperty("pointer-events","auto","important");
+    close.style.setProperty("display","none","important");
+  };
+
+  window.expandDrawCanvasNow=function(){
+    if(!isMobileDraw()) return;
+    // 何回目でも同じ手順で拡大できるよう、前回の状態をいったん解除
+    resetDrawCanvasExpand();
+
+    const size=Math.min(window.innerWidth*0.72,window.innerHeight*0.72,520);
+    const left=Math.max(8,(window.innerWidth-size)/2-18);
+    const top=Math.max(30,(window.innerHeight-size)/2-18);
+
+    document.body.classList.add("draw-canvas-expanded");
+    dc.style.setProperty("position","fixed","important");
+    dc.style.setProperty("left",left+"px","important");
+    dc.style.setProperty("top",top+"px","important");
+    dc.style.setProperty("width",size+"px","important");
+    dc.style.setProperty("height",size+"px","important");
+    dc.style.setProperty("max-width",size+"px","important");
+    dc.style.setProperty("max-height",size+"px","important");
+    dc.style.setProperty("margin","0","important");
+    dc.style.setProperty("z-index","1000000","important");
+    dc.style.setProperty("touch-action","none","important");
+
+    expand.style.setProperty("display","none","important");
+    close.style.setProperty("display","block","important");
+    close.style.setProperty("visibility","visible","important");
+    close.style.setProperty("pointer-events","auto","important");
+    close.style.setProperty("position","fixed","important");
+    close.style.setProperty("right","10px","important");
+    close.style.setProperty("top","50%","important");
+    close.style.setProperty("transform","translateY(-50%)","important");
+    close.style.setProperty("z-index","1000001","important");
   };
 
   window.addEventListener("resize",function(){
     if(document.body.classList.contains("draw-canvas-expanded")) {
-      window.expandDrawCanvasNow();
+      const size=Math.min(window.innerWidth*0.72,window.innerHeight*0.72,520);
+      const left=Math.max(8,(window.innerWidth-size)/2-18);
+      const top=Math.max(30,(window.innerHeight-size)/2-18);
+      dc.style.setProperty("left",left+"px","important");
+      dc.style.setProperty("top",top+"px","important");
+      dc.style.setProperty("width",size+"px","important");
+      dc.style.setProperty("height",size+"px","important");
+      dc.style.setProperty("max-width",size+"px","important");
+      dc.style.setProperty("max-height",size+"px","important");
     }
   });
 })();
