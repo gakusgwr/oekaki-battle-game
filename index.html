@@ -3338,6 +3338,19 @@ body.mobile-mode #gameArea{
   gap:0 !important;
 }
 
+
+/* V19: カウントダウン・戦闘中はスペシャルコードを完全に使用不可（PC/スマホ共通） */
+body:has(#count:not(.hidden)) #hushBtn,
+body:has(#gameArea:not(.hidden)) #hushBtn {
+  display:none !important;
+  pointer-events:none !important;
+  visibility:hidden !important;
+}
+body:has(#count:not(.hidden)) #specialCodeBox,
+body:has(#gameArea:not(.hidden)) #specialCodeBox {
+  display:none !important;
+  pointer-events:none !important;
+}
 </style>
 
 
@@ -3605,7 +3618,9 @@ function syncScreenVisibility() {
   if (hushBtn) {
     const showCodeButton = currentScreen === "draw";
     hushBtn.style.display = showCodeButton ? "block" : "none";
+    hushBtn.style.visibility = showCodeButton ? "visible" : "hidden";
     hushBtn.style.pointerEvents = showCodeButton ? "auto" : "none";
+    hushBtn.disabled = !showCodeButton;
   }
 
   if (specialCodeBox && currentScreen !== "draw") {
@@ -3955,6 +3970,13 @@ function startCountdown() {
   const mobileControls = document.getElementById("mobileControls");
 
   currentScreen = "countdown";
+  const hushDuringCount = document.getElementById("hushBtn");
+  if (hushDuringCount) {
+    hushDuringCount.style.display = "none";
+    hushDuringCount.style.visibility = "hidden";
+    hushDuringCount.style.pointerEvents = "none";
+    hushDuringCount.disabled = true;
+  }
   drawScreen.classList.add("hidden");
   gameScreen.classList.add("hidden");
   countScreen.classList.remove("hidden");
@@ -4005,6 +4027,13 @@ function startCountdown() {
 
     // カウントダウン終了 → 必ず戦闘画面へ
     currentScreen = "game";
+    const hushDuringGame = document.getElementById("hushBtn");
+    if (hushDuringGame) {
+      hushDuringGame.style.display = "none";
+      hushDuringGame.style.visibility = "hidden";
+      hushDuringGame.style.pointerEvents = "none";
+      hushDuringGame.disabled = true;
+    }
     countScreen.classList.add("hidden");
     drawScreen.classList.add("hidden");
     gameScreen.classList.remove("hidden");
