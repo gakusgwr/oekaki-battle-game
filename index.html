@@ -3873,7 +3873,7 @@ function selectTargetWeapon(type) {
   else document.getElementById("btnFree").classList.add("active");
   const guideInst = document.getElementById("guideInstruction");
   if (type === 'FREE') {
-    guideInst.textContent = "自由に描こう！（縦長:⚔️, 横長:🚙, その他:🏹）";
+    guideInst.textContent = "自由に描こう！（縦長:⚔️, 横長:🚙, その他:⚔️）";
   } else {
     guideInst.textContent = "ガイドのガイドライン・★マークを正確になぞろう！ズレると別の武器になっちゃうぞ！";
   }
@@ -3995,10 +3995,10 @@ function judge() {
     let h = Math.max(...ys) - Math.min(...ys);
     if (w > h * 1.4) return "🚙";
     if (h > w * 1.4) return "⚔️";
-    return "🏹";
+    return "⚔️";
   }
   if (pts.length < 15) {
-    weapon = "🏹";
+    weapon = deviceMode === 'mobile' ? "⚔️" : "🏹";
   } else if (selectedTarget === '🪄') {
     let avg = calcAvgDistToPolyline(starPoints, true);
     weapon = (avg < 32 && pts.length > 25) ? "🪄" : fallbackWeapon();
@@ -4010,7 +4010,7 @@ function judge() {
     weapon = (avg < 35 && pts.length > 25) ? "🚙" : fallbackWeapon();
   } else if (selectedTarget === '🏹') {
     let avg = calcAvgDistToPolyline(bowArcPoints, false);
-    weapon = (avg < 35 && pts.length > 20) ? "🏹" : fallbackWeapon();
+    weapon = deviceMode === 'mobile' ? fallbackWeapon() : ((avg < 35 && pts.length > 20) ? "🏹" : fallbackWeapon());
   } else {
     weapon = fallbackWeapon();
   }
