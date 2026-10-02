@@ -3281,15 +3281,23 @@ body.mobile-mode #gameArea #game {
 #specialCodeBox .special-code-input-panel{
   position:relative !important;
   z-index:1000002 !important;
+  box-sizing:border-box !important;
+  width:min(280px, 90vw) !important;
+  min-width:0 !important;
+  max-width:calc(90vw - 20px) !important;
+  overflow:hidden !important;
 }
 #specialCodeBox #specialCodeInput{
   position:relative !important;
   z-index:1000003 !important;
   display:block !important;
-  width:min(80vw,360px) !important;
-  min-height:44px !important;
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  height:44px !important;
   box-sizing:border-box !important;
-  margin:15px auto !important;
+  margin:15px 0 !important;
+  padding:6px 8px !important;
   font-size:20px !important;
   background:#fff !important;
   color:#111 !important;
