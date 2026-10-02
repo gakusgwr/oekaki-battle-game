@@ -3699,6 +3699,16 @@ function setScreen(screen) {
 function chooseDevice(mode) {
   deviceMode = mode;
   document.body.classList.toggle('mobile-mode', mode === 'mobile');
+
+  // スマホ版では弓を描画武器の選択肢から完全に外す
+  const bowBtn = document.getElementById('btnBow');
+  if (bowBtn) {
+    bowBtn.style.setProperty('display', mode === 'mobile' ? 'none' : 'inline-block', 'important');
+    if (mode === 'mobile' && selectedTarget === '🏹') {
+      selectedTarget = 'FREE';
+    }
+  }
+
   setScreen('draw');
   redrawCanvas();
 
