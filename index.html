@@ -3351,6 +3351,58 @@ body:has(#gameArea:not(.hidden)) #specialCodeBox {
   display:none !important;
   pointer-events:none !important;
 }
+
+/* V23: スマホ描画キャンバス拡大モード */
+#expandDrawBtn,
+#closeDrawExpandBtn{display:none;}
+
+body.mobile-mode #draw:not(.hidden) #expandDrawBtn{
+  display:block !important;
+  width:min(180px,42vw) !important;
+  min-height:38px !important;
+  margin:4px auto 2px !important;
+  padding:6px 12px !important;
+  font-size:15px !important;
+  font-weight:bold !important;
+  z-index:50 !important;
+}
+body.mobile-mode.draw-canvas-expanded #draw:not(.hidden) #expandDrawBtn{
+  display:none !important;
+}
+body.mobile-mode.draw-canvas-expanded #draw:not(.hidden) #closeDrawExpandBtn{
+  display:block !important;
+  position:fixed !important;
+  right:10px !important;
+  top:50% !important;
+  transform:translateY(-50%) !important;
+  z-index:100000 !important;
+  padding:10px 12px !important;
+  font-size:15px !important;
+  font-weight:bold !important;
+  border-radius:8px !important;
+  background:#fff !important;
+  color:#111 !important;
+  border:2px solid #333 !important;
+}
+body.mobile-mode.draw-canvas-expanded #draw:not(.hidden){
+  overflow:hidden !important;
+}
+body.mobile-mode.draw-canvas-expanded #draw:not(.hidden) #drawCanvas{
+  width:min(72vw, 62vh) !important;
+  height:min(72vw, 62vh) !important;
+  max-width:72vw !important;
+  max-height:62vh !important;
+  margin:4px auto 6px !important;
+  display:block !important;
+}
+@media (max-width:900px) and (orientation:portrait){
+  body.mobile-mode.draw-canvas-expanded #draw:not(.hidden) #drawCanvas{
+    width:min(82vw, 58vh) !important;
+    height:min(82vw, 58vh) !important;
+    max-width:82vw !important;
+    max-height:58vh !important;
+  }
+}
 </style>
 
 
@@ -3373,7 +3425,9 @@ body:has(#gameArea:not(.hidden)) #specialCodeBox {
     <button id="btnFree" class="active" onclick="selectTargetWeapon('FREE')">🎨 自由描画</button>
   </div>
   <p id="guideInstruction" style="color:#ffcc00; font-size:14px; margin-bottom:8px;">★マークを丁寧になぞろう！ずれると他の武器になっちゃうぞ！</p>
-  <canvas id="drawCanvas" width="400" height="400"></canvas><br>
+  <canvas id="drawCanvas" width="400" height="400"></canvas>
+  <button id="expandDrawBtn" type="button">🔍 大きくする</button>
+  <button id="closeDrawExpandBtn" type="button">✕ 閉じる</button><br>
   <button id="judgeBtn">武器決定（やり直し不可！）</button>
   <button id="clearBtn">描き直す</button>
   <p id="result" style="margin: 10px 0; font-size: 20px; font-weight:bold;"></p>
@@ -6025,6 +6079,21 @@ loop();
   sync();
 })();
 
+
+// V23: スマホ描画キャンバス拡大・縮小
+(function initDrawCanvasExpand(){
+  const expand=document.getElementById("expandDrawBtn");
+  const close=document.getElementById("closeDrawExpandBtn");
+  if(!expand || !close) return;
+  function setExpanded(on){
+    document.body.classList.toggle("draw-canvas-expanded", !!on);
+    const dc=document.getElementById("drawCanvas");
+    if(dc) dc.style.touchAction="none";
+  }
+  expand.addEventListener("click",()=>setExpanded(true));
+  close.addEventListener("click",()=>setExpanded(false));
+  window.closeDrawCanvasExpand=()=>setExpanded(false);
+})();
 </script>
 </body>
 </html>
