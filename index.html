@@ -6080,7 +6080,7 @@ loop();
 })();
 
 
-// V24: スマホ描画キャンバス拡大・縮小を直接配置で確実に切替
+// V25: スマホ描画キャンバスを何度でも拡大・縮小できるようにする
 (function initDrawCanvasExpand(){
   const expand=document.getElementById("expandDrawBtn");
   const close=document.getElementById("closeDrawExpandBtn");
@@ -6088,73 +6088,22 @@ loop();
   const dc=document.getElementById("drawCanvas");
   if(!expand || !close || !draw || !dc) return;
 
-  const saved={};
-  function saveStyle(el, props){
-    if(!saved[el.id]) saved[el.id]={};
-    props.forEach(p=>{
-      if(saved[el.id][p]===undefined) saved[el.id][p]=el.style.getPropertyValue(p);
-    });
-  }
-  function setExpanded(on){
-    document.body.classList.toggle("draw-canvas-expanded",!!on);
-    dc.style.touchAction="none";
+  const canvasProps=["position","left","top","width","height","max-width","max-height","margin","z-index","transform"];
+  const buttonProps=["position","left","top","width","height","margin","transform","z-index"];
+  let expanded=false;
 
-    if(on){
-      saveStyle(dc,["position","left","top","width","height","max-width","max-height","margin","z-index"]);
-      saveStyle(expand,["position","left","top","width","height","margin","z-index"]);
-      saveStyle(close,["display"]);
-
-      const size=Math.min(window.innerHeight*0.62,window.innerWidth*0.62,520);
-      const left=Math.max(8,(window.innerWidth-size)/2-18);
-      const top=Math.max(36,(window.innerHeight-size)/2-18);
-
-      Object.assign(dc.style,{
-        position:"fixed",
-        left:left+"px",
-        top:top+"px",
-        width:size+"px",
-        height:size+"px",
-        maxWidth:size+"px",
-        maxHeight:size+"px",
-        margin:"0",
-        zIndex:"100000"
-      });
-      Object.assign(expand.style,{
-        position:"fixed",
-        left:"50%",
-        top:(top+size+8)+"px",
-        width:"180px",
-        height:"40px",
-        margin:"0",
-        transform:"translateX(-50%)",
-        zIndex:"100001"
-      });
-      expand.style.setProperty("display","none","important");
-      close.style.setProperty("display","block","important");
-    }else{
-      document.body.classList.remove("draw-canvas-expanded");
-      for(const [id,props] of Object.entries(saved)){
-        const el=document.getElementById(id);
-        if(!el) continue;
-        for(const [p,v] of Object.entries(props)){
-          if(v) el.style.setProperty(p,v);
-          else el.style.removeProperty(p);
-        }
-      }
-      saved[dc.id]=undefined;
-      saved[expand.id]=undefined;
-      saved[close.id]=undefined;
-      close.style.removeProperty("display");
-      window.requestAnimationFrame(positionExpandButton);
-    }
+  function clearInline(el, props){
+    props.forEach(p=>el.style.removeProperty(p));
   }
 
   function positionExpandButton(){
-    if(!document.body.classList.contains("mobile-mode") ||
-       draw.classList.contains("hidden") ||
-       document.body.classList.contains("draw-canvas-expanded")) return;
+    if(expanded ||
+       !document.body.classList.contains("mobile-mode") ||
+       draw.classList.contains("hidden")) return;
+
     const r=dc.getBoundingClientRect();
     if(r.width<10 || r.height<10) return;
+
     expand.style.setProperty("position","fixed","important");
     expand.style.setProperty("left",(r.left+r.width/2)+"px","important");
     expand.style.setProperty("top",(r.bottom+5)+"px","important");
@@ -6165,17 +6114,70 @@ loop();
     expand.style.setProperty("z-index","100001","important");
   }
 
-  expand.addEventListener("click",()=>setExpanded(true));
-  close.addEventListener("click",()=>setExpanded(false));
+  function setExpanded(on){
+    expanded=!!on;
+    document.body.classList.toggle("draw-canvas-expanded",expanded);
+    dc.style.touchAction="none";
+
+    if(expanded){
+      const size=Math.min(window.innerHeight*0.62,window.innerWidth*0.62,520);
+      const left=Math.max(8,(window.innerWidth-size)/2-18);
+      const top=Math.max(36,(window.innerHeight-size)/2-18);
+
+      dc.style.setProperty("position","fixed","important");
+      dc.style.setProperty("left",left+"px","important");
+      dc.style.setProperty("top",top+"px","important");
+      dc.style.setProperty("width",size+"px","important");
+      dc.style.setProperty("height",size+"px","important");
+      dc.style.setProperty("max-width",size+"px","important");
+      dc.style.setProperty("max-height",size+"px","important");
+      dc.style.setProperty("margin","0","important");
+      dc.style.setProperty("z-index","100000","important");
+
+      expand.style.setProperty("display","none","important");
+
+      close.style.setProperty("display","block","important");
+      close.style.setProperty("position","fixed","important");
+      close.style.setProperty("right","10px","important");
+      close.style.setProperty("top","50%","important");
+      close.style.setProperty("transform","translateY(-50%)","important");
+      close.style.setProperty("z-index","100001","important");
+    }else{
+      // 拡大時に付けたインライン指定を全部消す。
+      // これで「閉じる→大きくする」を何回でも繰り返せる。
+      clearInline(dc,canvasProps);
+      clearInline(expand,buttonProps);
+      clearInline(close,["display","position","right","top","transform","z-index"]);
+      close.style.removeProperty("display");
+      window.requestAnimationFrame(positionExpandButton);
+    }
+  }
+
+  expand.addEventListener("click",function(e){
+    e.preventDefault();
+    if(!expanded) setExpanded(true);
+  });
+
+  close.addEventListener("click",function(e){
+    e.preventDefault();
+    if(expanded) setExpanded(false);
+  });
+
   window.closeDrawCanvasExpand=()=>setExpanded(false);
-  window.addEventListener("resize",()=>{
-    if(document.body.classList.contains("draw-canvas-expanded")) setExpanded(true);
+
+  window.addEventListener("resize",function(){
+    if(expanded) setExpanded(true);
     else positionExpandButton();
   });
+
   window.addEventListener("orientationchange",()=>setTimeout(positionExpandButton,150));
-  const observer=new MutationObserver(()=>setTimeout(positionExpandButton,0));
+
+  const observer=new MutationObserver(()=>{
+    setTimeout(positionExpandButton,0);
+  });
   observer.observe(draw,{attributes:true,attributeFilter:["class","style"]});
-  setTimeout(positionExpandButton,100);
+
+  setTimeout(positionExpandButton,150);
 })();
 </script>
 </body>
