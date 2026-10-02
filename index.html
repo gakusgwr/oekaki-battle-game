@@ -6089,7 +6089,7 @@ loop();
   if(!expand || !close || !draw || !dc) return;
 
   const canvasProps=["position","left","top","width","height","max-width","max-height","margin","z-index","transform"];
-  const buttonProps=["position","left","top","width","height","margin","transform","z-index"];
+  const buttonProps=["display","position","left","top","width","height","margin","transform","z-index"];
   let expanded=false;
 
   function clearInline(el, props){
@@ -6147,6 +6147,7 @@ loop();
       // これで「閉じる→大きくする」を何回でも繰り返せる。
       clearInline(dc,canvasProps);
       clearInline(expand,buttonProps);
+      expand.style.removeProperty("display");
       clearInline(close,["display","position","right","top","transform","z-index"]);
       close.style.removeProperty("display");
       window.requestAnimationFrame(positionExpandButton);
