@@ -5972,6 +5972,35 @@ loop();
 
 
 
+
+/* V20: 実際に表示されている画面を監視してスペシャルコードボタンを強制制御 */
+(function forceSpecialCodeButtonVisibility(){
+  function sync(){
+    const hush=document.getElementById("hushBtn");
+    const draw=document.getElementById("draw");
+    const count=document.getElementById("count");
+    const game=document.getElementById("gameArea");
+    if(!hush) return;
+
+    const isVisible=el => el && !el.classList.contains("hidden");
+    const battleOrCountdown=isVisible(count) || isVisible(game);
+    const canUse=isVisible(draw) && !battleOrCountdown;
+
+    hush.style.setProperty("display", canUse ? "block" : "none", "important");
+    hush.style.setProperty("visibility", canUse ? "visible" : "hidden", "important");
+    hush.style.setProperty("pointer-events", canUse ? "auto" : "none", "important");
+    hush.disabled=!canUse;
+  }
+
+  const observer=new MutationObserver(sync);
+  ["draw","count","gameArea"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) observer.observe(el,{attributes:true,attributeFilter:["class","style"]});
+  });
+  setInterval(sync,100);
+  sync();
+})();
+
 </script>
 </body>
 </html>
